@@ -2,4 +2,4 @@
 
 MOODLE_ROOT_DIR=~/Development/ome_moodle/tools/docker/Sharing/www/moodle
 
-cp omerofilepicker.php ${MOODLE_ROOT_DIR}/lib/form/omefilepicker.php
+cp omefilepicker.php ${MOODLE_ROOT_DIR}/lib/form/omefilepicker.php
