@@ -42,7 +42,7 @@ require_once($CFG->dirroot.'/lib/form/filepicker.php');
  * @copyright 2015 CRS4
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later // FIXME: to be checked
  */
-class MoodleQuickForm_omefilepicker extends MoodleQuickForm_filepicker {
+class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
     /** @var string html for help button, if empty then no help will icon will be dispalyed. */
     public $_helpbutton = '';
 
@@ -61,7 +61,7 @@ class MoodleQuickForm_omefilepicker extends MoodleQuickForm_filepicker {
      *              or an associative array
      * @param array $options set of options to initalize filepicker
      */
-    function MoodleQuickForm_omefilepicker($elementName=null, $elementLabel=null, $attributes=null, $options=null) {
+    function MoodleQuickForm_omerofilepicker($elementName=null, $elementLabel=null, $attributes=null, $options=null) {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
     }
 
