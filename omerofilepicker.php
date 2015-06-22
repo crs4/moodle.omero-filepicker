@@ -131,7 +131,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
         $html .= $OUTPUT->render_file_picker($fp);
         $html .= '<input type="hidden" name="'.$elname.'" id="'.$id.'" value="'.$draftitemid.'" class="filepickerhidden"/>';
 
-        $module = array('name'=>'form_filepicker', 'fullpath'=>'/lib/form/filepicker.js', 'requires'=>array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
+        $module = array('name'=>'form_filepicker', 'fullpath'=>'/lib/form/filepicker.js',
+            'requires'=>array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
         $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
 
         $nonjsfilepicker = new moodle_url('/repository/draftfiles_manager.php', array(
@@ -194,23 +195,29 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
             $buttonname = '';
         }
         $html = <<<EOD
-<div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}'>
-$icon_progress
-</div>
-<div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none">
-    <div>
-        <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
-        <span> $maxsize </span>
-    </div>
+            <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}'>$icon_progress</div>
+            <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none">
+            <div>
+                <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
+                <span> $maxsize </span>
+            </div>
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
     <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="position: relative">
-    <div class="filepicker-filename">
-        <div class="filepicker-container">$currentfile<div class="dndupload-message">$strdndenabled <br/><div class="dndupload-arrow"></div></div></div>
-        <div class="dndupload-progressbars"></div>
-    </div>
-    <div><div class="dndupload-target">{$strdroptoupload}<br/><div class="dndupload-arrow"></div></div></div>
+        <div class="filepicker-filename">
+            <div class="filepicker-container">Pippo: $currentfile
+                <div class="dndupload-message">$strdndenabled <br/>
+                    <div class="dndupload-arrow"></div>
+                </div>
+            </div>
+            <div class="dndupload-progressbars"></div>
+        </div>
+        <div>
+            <div class="dndupload-target">{$strdroptoupload}<br/>
+                <div class="dndupload-arrow"></div>
+            </div>
+        </div>
     </div>
 EOD;
         }
