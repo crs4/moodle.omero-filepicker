@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp ~/Development/ome_moodle/tools/docker/Sharing/www/moodle/lib/form/omefilepicker.php .
