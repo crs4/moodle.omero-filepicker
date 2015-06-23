@@ -131,7 +131,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
         $html .= $OUTPUT->render_file_picker($fp);
         $html .= '<input type="hidden" name="'.$elname.'" id="'.$id.'" value="'.$draftitemid.'" class="filepickerhidden"/>';
 
-        $module = array('name'=>'form_filepicker', 'fullpath'=>'/lib/form/filepicker.js',
+        $module = array('name'=>'form_filepicker', 'fullpath'=>'/lib/form/omerofilepicker.js',
             'requires'=>array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
         $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
 
