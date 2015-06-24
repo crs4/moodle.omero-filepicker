@@ -28,9 +28,9 @@
 global $CFG;
 
 require_once("HTML/QuickForm/button.php");
-require_once($CFG->dirroot.'/repository/lib.php');
+require_once($CFG->dirroot . '/repository/lib.php');
 
-require_once($CFG->dirroot.'/lib/form/filepicker.php');
+require_once($CFG->dirroot . '/lib/form/filepicker.php');
 
 /**
  * Omero Filepicker form element
@@ -42,7 +42,8 @@ require_once($CFG->dirroot.'/lib/form/filepicker.php');
  * @copyright 2015 CRS4
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later // FIXME: to be checked
  */
-class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
+class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
+{
     /** @var string html for help button, if empty then no help will icon will be dispalyed. */
     public $_helpbutton = '';
 
@@ -50,7 +51,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
     // PHP doesn't support 'key' => $value1 | $value2 in class definition
     // We cannot do $_options = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
     // So I have to set null here, and do it in constructor
-    protected $_options    = array('maxbytes'=>0, 'accepted_types'=>'*', 'return_types'=>null);
+    protected $_options = array('maxbytes' => 0, 'accepted_types' => '*', 'return_types' => null);
 
     /**
      * Constructor
@@ -61,7 +62,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
      *              or an associative array
      * @param array $options set of options to initalize filepicker
      */
-    function MoodleQuickForm_omerofilepicker($elementName=null, $elementLabel=null, $attributes=null, $options=null) {
+    function MoodleQuickForm_omerofilepicker($elementName = null, $elementLabel = null, $attributes = null, $options = null)
+    {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
     }
 
@@ -70,7 +72,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
      *
      * @return string html for help button
      */
-    function getHelpButton() {
+    function getHelpButton()
+    {
         return $this->_helpbutton;
     }
 
@@ -79,8 +82,9 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
      *
      * @return string
      */
-    function getElementTemplateType() {
-        if ($this->_flagFrozen){
+    function getElementTemplateType()
+    {
+        if ($this->_flagFrozen) {
             return 'nodisplay';
         } else {
             return 'default';
@@ -92,9 +96,19 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
      *
      * @return string
      */
-    function toHtml() {
+    function toHtml()
+    {
         global $CFG, $COURSE, $USER, $PAGE, $OUTPUT;
-        $id     = $this->_attributes['id'];
+
+        $endpoint = get_config('omero', 'omero_restendpoint');
+
+        $webgateway_server = substr($endpoint, 0, strpos($endpoint, "/webgateway"));
+        $omero_server = "";
+
+        error_log("ENDPOINT: " . $endpoint);
+        error_log("GATEWAY ADDR: " . $webgateway_server);
+
+        $id = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
 
         if ($this->_flagFrozen) {
@@ -116,36 +130,38 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
 
         $args = new stdClass();
         // need these three to filter repositories list
-        $args->accepted_types = $this->_options['accepted_types']?$this->_options['accepted_types']:'*';
+        $args->accepted_types = $this->_options['accepted_types'] ? $this->_options['accepted_types'] : '*';
         $args->return_types = $this->_options['return_types'];
         $args->itemid = $draftitemid;
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
-        $args->buttonname = $elname.'choose';
+        $args->buttonname = $elname . 'choose';
         $args->elementname = $elname;
 
         $html = $this->_getTabs();
         $fp = new file_picker($args);
         $options = $fp->options;
         $options->context = $PAGE->context;
+        $options->moodle_server = $CFG->wwwroot ;
         $html .= $OUTPUT->render_file_picker($fp);
-        $html .= '<input type="hidden" name="'.$elname.'" id="'.$id.'" value="'.$draftitemid.'" class="filepickerhidden"/>';
+        $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
+                 '" value="' . $draftitemid . '" class="filepickerhidden"/>';
 
-        $module = array('name'=>'form_filepicker', 'fullpath'=>'/lib/form/omerofilepicker.js',
-            'requires'=>array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
+        $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker.js',
+            'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
         $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
 
         $nonjsfilepicker = new moodle_url('/repository/draftfiles_manager.php', array(
-            'env'=>'filepicker',
-            'action'=>'browse',
-            'itemid'=>$draftitemid,
-            'subdirs'=>0,
-            'maxbytes'=>$options->maxbytes,
-            'maxfiles'=>1,
-            'ctx_id'=>$PAGE->context->id,
-            'course'=>$PAGE->course->id,
-            'sesskey'=>sesskey(),
-            ));
+            'env' => 'filepicker',
+            'action' => 'browse',
+            'itemid' => $draftitemid,
+            'subdirs' => 0,
+            'maxbytes' => $options->maxbytes,
+            'maxfiles' => 1,
+            'ctx_id' => $PAGE->context->id,
+            'course' => $PAGE->course->id,
+            'sesskey' => sesskey(),
+        ));
 
         // non js file picker
         $html .= '<noscript>';
@@ -162,16 +178,17 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
      * @param file_picker $fp
      * @return string
      */
-    public function render_file_picker(file_picker $fp) {
+    public function render_file_picker(file_picker $fp)
+    {
         global $CFG, $OUTPUT, $USER;
         $options = $fp->options;
         $client_id = $options->client_id;
         $strsaved = get_string('filesaved', 'repository');
         $straddfile = get_string('openpicker', 'repository');
-        $strloading  = get_string('loading', 'repository');
+        $strloading = get_string('loading', 'repository');
         $strdndenabled = get_string('dndenabled_inbox', 'moodle');
         $strdroptoupload = get_string('droptoupload', 'moodle');
-        $icon_progress = $OUTPUT->pix_icon('i/loading_small', $strloading).'';
+        $icon_progress = $OUTPUT->pix_icon('i/loading_small', $strloading) . '';
 
         $currentfile = $options->currentfile;
         if (empty($currentfile)) {
@@ -195,7 +212,9 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
             $buttonname = '';
         }
         $html = <<<EOD
-            <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}'>$icon_progress</div>
+            <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
+                $icon_progress
+            </div>
             <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none">
             <div>
                 <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
@@ -204,8 +223,9 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker {
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
-    <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="position: relative">
-        <div class="filepicker-filename">
+    <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
+
+         <div class="filepicker-filename" style="border: none;">
             <div class="filepicker-container">Pippo: $currentfile
                 <div class="dndupload-message">$strdndenabled <br/>
                     <div class="dndupload-arrow"></div>
@@ -232,7 +252,8 @@ EOD;
      * @param bool $assoc specifies if returned array is associative
      * @return array
      */
-    function exportValue(&$submitValues, $assoc = false) {
+    function exportValue(&$submitValues, $assoc = false)
+    {
         global $USER;
 
         $draftitemid = $this->_findValue($submitValues);
@@ -248,7 +269,8 @@ EOD;
                 $file = array_shift($files);
                 if ($this->_options['maxbytes']
                     and $this->_options['maxbytes'] !== USER_CAN_IGNORE_FILE_SIZE_LIMITS
-                    and $file->get_filesize() > $this->_options['maxbytes']) {
+                    and $file->get_filesize() > $this->_options['maxbytes']
+                ) {
 
                     // bad luck, somebody tries to sneak in oversized file
                     $file->delete();
