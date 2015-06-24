@@ -3,15 +3,61 @@ M.form_filepicker.Y = null;
 M.form_filepicker.instances = [];
 
 M.form_filepicker.callback = function(params) {
-    alert("Ok");
-    var html = '<a href="'+params['url']+'">'+params['file']+'</a>';
-    html += '<div class="dndupload-progressbars"></div>';
-    M.form_filepicker.Y.one('#file_info_'+params['client_id'] + ' .filepicker-filename').setContent(html);
+
+    var html = "";
+    var url = params['url'];
+
+    var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
+    alert(newURL);
+
+    // FIXME: check whether there exists a better method to identify the file type
+    if(url.indexOf("webgateway") > -1){
+
+        var proto = url.substring(0,7);
+        var path = url.substring(7);
+        var server_address = url.substring(0, url.indexOf("webgateway")-1);
+        var web_gateway = server_address + "/webgateway";
+        var static_root = server_address + "/static";
+
+        // compute the imageId from the actual url
+        var imageId = url.substring(url.lastIndexOf("/")+1);
+
+        // FIXME: only for
+        console.log("Server Address: " + server_address);
+        console.log("URL: " + url);
+        console.log(params);
+        console.log("IMAGE_ID", imageId);
+        console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
+
+        var omeroViewerUrl = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
+
+        html = '<iframe width="100%" height="600px"' +
+        ' src="' + omeroViewerUrl +
+        '?id=' + + imageId +
+        '&width=' + encodeURIComponent("92%") +
+        '&height=' + encodeURIComponent("520px") +
+        '&menubar=no'+
+        '&scrollbars=yes' +
+        '&resizable=yes' +
+        '&location=no' +
+        '&directories=no' +
+        '&status=no' +
+        '" id="omeroviewport" name="omeroviewport" style="border: none;">' +
+        '</iframe>' ;
+
+        M.form_filepicker.Y.one('#file_info_'+params['client_id'] + ' .filepicker-filename').setContent(html);
+
+    }else { // Default filepicker viewer
+        html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
+        html += '<div class="dndupload-progressbars"></div>';
+        M.form_filepicker.Y.one('#file_info_'+params['client_id'] + ' .filepicker-filename').setContent(html);
+    }
+
     //When file is added then set status of global variable to true
-    var elementname = M.core_filepicker.instances[params['client_id']].options.elementname;
-    M.form_filepicker.instances[elementname].fileadded = true;
+    var elementName = M.core_filepicker.instances[params['client_id']].options.elementname;
+    M.form_filepicker.instances[elementName].fileadded = true;
     //generate event to indicate changes which will be used by disable if or validation code
-    M.form_filepicker.Y.one('#id_'+elementname).simulate('change');
+    M.form_filepicker.Y.one('#id_'+elementName).simulate('change');
 };
 
 /**
@@ -27,6 +73,9 @@ M.form_filepicker.init = function(Y, options) {
 
     //Set filepicker callback
     options.formcallback = M.form_filepicker.callback;
+
+    // Set MoodleServer
+    M.form_filepicker.Y.moodle_server = options.moodle_server;
 
     if (!M.core_filepicker.instances[options.client_id]) {
         M.core_filepicker.init(Y, options);
@@ -49,6 +98,7 @@ M.form_filepicker.init = function(Y, options) {
 
     var dndoptions = {
         clientid: options.client_id,
+        moodle_server: options.moodle_server,
         acceptedtypes: options.accepted_types,
         author: options.author,
         maxfiles: -1,
