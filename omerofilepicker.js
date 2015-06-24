@@ -8,7 +8,6 @@ M.form_filepicker.callback = function(params) {
     var url = params['url'];
 
     var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
-    alert(newURL);
 
     // FIXME: check whether there exists a better method to identify the file type
     if(url.indexOf("webgateway") > -1){
