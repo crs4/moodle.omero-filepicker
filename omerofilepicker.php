@@ -143,7 +143,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $options = $fp->options;
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot ;
-        $html .= $OUTPUT->render_file_picker($fp);
+        $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
                  '" value="' . $draftitemid . '" class="filepickerhidden"/>';
 
@@ -226,7 +226,7 @@ EOD;
     <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
 
          <div class="filepicker-filename" style="border: none;">
-            <div class="filepicker-container">Pippo: $currentfile
+            <div class="filepicker-container">$currentfile
                 <div class="dndupload-message">$strdndenabled <br/>
                     <div class="dndupload-arrow"></div>
                 </div>
