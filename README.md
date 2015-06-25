@@ -5,8 +5,8 @@
 - copy omefilepicker into the lib/form folder of your Moodle installation
 - add the following line at the end of the lib/formslib.php Moodle file:
 
-        MoodleQuickForm::registerElementType('omefilepicker',   	      	   
-         	    CFG->libdir/form/omefilepicker.php", 'MoodleQuickForm_omefilepicker');
+        MoodleQuickForm::registerElementType('omerofilepicker',   	      	   
+         	    "$CFG->libdir/form/omerofilepicker.php", 'MoodleQuickForm_omerofilepicker');
 	
 	
 ### Usage
