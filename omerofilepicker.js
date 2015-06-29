@@ -30,23 +30,18 @@ M.form_filepicker.callback = function (params) {
 
         var omeroViewerUrl = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
 
-        html ='<iframe width="100%" height="800px"' +
-            //' frameborder="0"' +
-            ' scrolling="auto"' +
-            ' src="' + omeroViewerUrl +
-            '?id=' + +imageId +
-            '&width=' + encodeURIComponent("92%") +
-            '&height=' + encodeURIComponent("600px") +
-            //'&menubar=no' +
-            //'&scrollbars=yes' +
-            //'&resizable=yes' +
-            //'&location=no' +
-            //'&directories=no' +
-            //'&status=no' +
-            '" id="omeroviewport" name="omeroviewport" ' +
-            ' style="border: none;"' +
-            //' onLoad="autoResize(\'omeroviewport\');"' +
-            '></iframe>';
+
+
+        html = '<iframe width="100%" height="100%" style="min-height:100%;width:100%;"' +
+        ' frameborder="0"' +
+        ' src="' + omeroViewerUrl +
+        '?id=' + +imageId +
+        '&frame=omero-viewer-frame' +
+        '&width=' + encodeURIComponent("92%") +
+        '&height=' + encodeURIComponent("100%") +
+        '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
+        ' style="border: none;"' +
+        '></iframe>';
 
         M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
 
@@ -115,15 +110,3 @@ M.form_filepicker.init = function (Y, options) {
     };
     M.form_dndupload.init(Y, dndoptions);
 };
-
-
-function autoResize(id) {
-    var newheight;
-    var newwidth;
-    if (document.getElementById) {
-        newheight = document.getElementById(id).contentWindow.document.body.scrollHeight;
-        newwidth = document.getElementById(id).contentWindow.document.body.scrollWidth;
-    }
-    document.getElementById(id).height = (newheight) + "px";
-    document.getElementById(id).width = (newwidth) + "px";
-}
