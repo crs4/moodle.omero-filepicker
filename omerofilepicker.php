@@ -212,6 +212,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $buttonname = '';
         }
         $html = <<<EOD
+            <!-- if no URL has been selected yet -->
             <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
                 $icon_progress
             </div>
@@ -220,25 +221,27 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
                 <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
                 <span> $maxsize </span>
             </div>
+
+            <input type="button" value="prova" onclick="setIframeHeight('omeroviewport');" />
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
-    <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
-
-         <div class="filepicker-filename" style="border: none;">
-            <div class="filepicker-container">$currentfile
-                <div class="dndupload-message">$strdndenabled <br/>
-                    <div class="dndupload-arrow"></div>
+            <!-- if a URL has been selected -->
+            <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
+                <div class="filepicker-filename" style="border: none;">
+                    <div class="filepicker-container">$currentfile
+                        <div class="dndupload-message">$strdndenabled <br/>
+                            <div class="dndupload-arrow"></div>
+                        </div>
+                    </div>
+                    <div class="dndupload-progressbars"></div>
+                </div>
+                <div>
+                    <div class="dndupload-target">{$strdroptoupload}<br/>
+                        <div class="dndupload-arrow"></div>
+                    </div>
                 </div>
             </div>
-            <div class="dndupload-progressbars"></div>
-        </div>
-        <div>
-            <div class="dndupload-target">{$strdroptoupload}<br/>
-                <div class="dndupload-arrow"></div>
-            </div>
-        </div>
-    </div>
 EOD;
         }
         $html .= '</div>';
