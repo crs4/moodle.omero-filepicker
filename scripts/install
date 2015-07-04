@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./deploy
+
+if [[ $? -eq 0 ]]; then
+	echo -e "# OmeroFilePicker \nMoodleQuickForm::registerElementType('omerofilepicker', \"$CFG->libdir/form/omerofilepicker.php\", 'MoodleQuickForm_omerofilepicker');" >> ${MOODLE_WWW}/lib/formslib.php
+fi
