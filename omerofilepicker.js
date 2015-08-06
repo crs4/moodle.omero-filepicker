@@ -31,17 +31,17 @@ M.form_filepicker.callback = function (params) {
         var omeroViewerUrl = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
 
 
-
         html = '<iframe width="100%" height="100%" style="min-height:100%;width:100%;"' +
-        ' frameborder="0"' +
-        ' src="' + omeroViewerUrl +
-        '?id=' + +imageId +
-        '&frame=omero-viewer-frame' +
-        '&width=' + encodeURIComponent("92%") +
-        '&height=' + encodeURIComponent("100%") +
-        '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
-        ' style="border: none;"' +
-        '></iframe>';
+            ' frameborder="0"' +
+            ' src="' + omeroViewerUrl +
+            '?id=' + +imageId +
+            '&frame=omero-viewer-frame' +
+            '&width=' + encodeURIComponent("92%") +
+            '&height=' + encodeURIComponent("100%") +
+            '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
+            ' style="border: none;" ' +
+            ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
+            '></iframe>';
 
         M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
 
@@ -59,7 +59,7 @@ M.form_filepicker.callback = function (params) {
 };
 
 /**
- * This fucntion is called for each file picker on page.
+ * This function is called for each file picker on page.
  */
 M.form_filepicker.init = function (Y, options) {
     //Keep reference of YUI, so that it can be used in callback.
@@ -110,3 +110,18 @@ M.form_filepicker.init = function (Y, options) {
     };
     M.form_dndupload.init(Y, dndoptions);
 };
+
+
+/**
+ * Notifies that frame is completely loaded !!!
+ * @param frame_obj frame object reference
+ */
+M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
+    console.log("Frame '" + frame_obj.id + "' is loaded!!!", frame_obj);
+    document.dispatchEvent(CustomEvent('frameLoaded', {
+        detail: {
+            "frameId": frame_obj.id
+        },
+        bubbles: true
+    }));
+}
