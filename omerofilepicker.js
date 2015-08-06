@@ -118,7 +118,7 @@ M.form_filepicker.init = function (Y, options) {
  */
 M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
     console.log("Frame '" + frame_obj.id + "' is loaded!!!", frame_obj);
-    document.dispatchEvent(CustomEvent('frameLoaded', {
+    document.dispatchEvent(new CustomEvent('frameLoaded', {
         detail: {
             "frameId": frame_obj.id
         },
