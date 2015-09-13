@@ -4,6 +4,7 @@ M.form_filepicker.instances = [];
 
 M.form_filepicker.callback = function (params) {
 
+    var me = M.form_filepicker;
     var html = "";
     var url = params['url'];
 
@@ -17,25 +18,33 @@ M.form_filepicker.callback = function (params) {
         var server_address = url.substring(0, url.indexOf("webgateway") - 1);
         var web_gateway = server_address + "/webgateway";
         var static_root = server_address + "/static";
+        var frame_id = "omero-viewer-frame";
 
         // compute the imageId from the actual url
-        var imageId = url.substring(url.lastIndexOf("/") + 1);
+        var image_id = url.substring(url.lastIndexOf("/") + 1);
 
         // FIXME: only for debug
         console.log("Server Address: " + server_address);
         console.log("URL: " + url);
         console.log(params);
-        console.log("IMAGE_ID", imageId);
+        console.log("IMAGE_ID", image_id);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
-        var omeroViewerUrl = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
+        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
+
+        me.current_loaded_image = {
+            omero_server_address: server_address,
+            image_id:  image_id,
+            frame_id: frame_id,
+            moodle_viewer_for_omero_url: moodle_viewer_for_omero_url
+        };
 
 
         html = '<iframe width="100%" height="100%" style="min-height:100%;width:100%;"' +
             ' frameborder="0"' +
-            ' src="' + omeroViewerUrl +
-            '?id=' + +imageId +
-            '&frame=omero-viewer-frame' +
+            ' src="' + moodle_viewer_for_omero_url +
+            '?id=' + +image_id +
+            '&frame=' + frame_id +
             '&width=' + encodeURIComponent("92%") +
             '&height=' + encodeURIComponent("100%") +
             '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
@@ -129,6 +138,15 @@ M.form_filepicker.init = function (Y, options) {
     }
 };
 
+/**
+ * Returns a JSON description of the current loaded image
+ *
+ * @returns {{server_address: string, image_id: *}|*}
+ */
+M.form_filepicker.getCurrentLoadedImage = function(){
+    return M.form_filepicker.current_loaded_image;
+}
+
 
 /**
  * Notifies that frame is completely loaded !!!
@@ -137,9 +155,7 @@ M.form_filepicker.init = function (Y, options) {
 M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
     console.log("Frame '" + frame_obj.id + "' is loaded!!!", frame_obj);
     document.dispatchEvent(new CustomEvent('frameLoaded', {
-        detail: {
-            "frameId": frame_obj.id
-        },
+        detail: M.form_filepicker.current_loaded_image,
         bubbles: true
     }));
 }
