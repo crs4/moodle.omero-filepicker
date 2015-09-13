@@ -49,6 +49,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     function MoodleQuickForm_omerofilepicker($elementName = null, $elementLabel = null, $attributes = null, $options = null)
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
+        $this->omero_image_url = $options["omero_image_url"];
     }
 
     /**
@@ -98,7 +99,11 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $html = $this->_getTabs();
         $fp = new file_picker($args);
         $options = $fp->options;
-        $options->omero_image_url = $_REQUEST['omero_image_url'];
+        // set omero_image_url
+        if(isset($_REQUEST['omero_image_url']))
+            $options->omero_image_url = $_REQUEST['omero_image_url'] || $this->omero_image_url;
+        else
+            $options->omero_image_url = $this->omero_image_url;
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot ;
         $html .= $this->render_file_picker($fp);
