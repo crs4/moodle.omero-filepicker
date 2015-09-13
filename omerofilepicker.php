@@ -171,7 +171,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         }
         $html = <<<EOD
 
-            <script type="text/javascript">alert("Hi: $options->env"); </script>
             <!-- if no URL has been selected yet -->
             <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
                 $icon_progress
