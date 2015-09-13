@@ -21,7 +21,7 @@ M.form_filepicker.callback = function (params) {
         // compute the imageId from the actual url
         var imageId = url.substring(url.lastIndexOf("/") + 1);
 
-        // FIXME: only for
+        // FIXME: only for debug
         console.log("Server Address: " + server_address);
         console.log("URL: " + url);
         console.log(params);
@@ -45,6 +45,16 @@ M.form_filepicker.callback = function (params) {
 
         M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
 
+        // FIXME: to enhance for supporting multiple viewers in one page (i.e., how to identify the proper form?)
+        // Update the reference to the selected OMERO image
+        var forms = document.forms;
+        for (var i in forms) {
+            if(forms[i].elements) {
+                if(forms[i].elements['omero_image_url']) {
+                    forms[i].elements['omero_image_url'].value = url;
+                }
+            }
+        }
     } else { // Default filepicker viewer
         html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
         html += '<div class="dndupload-progressbars"></div>';
@@ -109,6 +119,14 @@ M.form_filepicker.init = function (Y, options) {
         contextid: options.context.id
     };
     M.form_dndupload.init(Y, dndoptions);
+
+    // Checks whether an OMERO image has been selected (usefull after page refresh)
+    if (options["omero_image_url"] != null) {
+        M.form_filepicker.callback({
+            client_id: dndoptions.clientid,
+            url: options["omero_image_url"]
+        });
+    }
 };
 
 

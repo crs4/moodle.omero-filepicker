@@ -98,6 +98,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $html = $this->_getTabs();
         $fp = new file_picker($args);
         $options = $fp->options;
+        $options->omero_image_url = $_REQUEST['omero_image_url'];
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot ;
         $html .= $this->render_file_picker($fp);
@@ -169,6 +170,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $buttonname = '';
         }
         $html = <<<EOD
+
+            <script type="text/javascript">alert("Hi: $options->env"); </script>
             <!-- if no URL has been selected yet -->
             <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
                 $icon_progress
@@ -181,6 +184,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
+
             <!-- if a URL has been selected -->
             <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
                 <div class="filepicker-filename" style="border: none;">
