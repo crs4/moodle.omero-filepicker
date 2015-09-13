@@ -10,5 +10,5 @@ fi
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # deploy the code
-cp ${DIR}/../omerofilepicker.php ${MOODLE_WWW}/lib/form/omerofilepicker.php
-cp ${DIR}/../omerofilepicker.js ${MOODLE_WWW}/lib/form/omerofilepicker.js
+cp "${DIR}/../omerofilepicker.php" "${MOODLE_WWW}/lib/form/omerofilepicker.php"
+cp "${DIR}/../omerofilepicker.js" "${MOODLE_WWW}/lib/form/omerofilepicker.js"
