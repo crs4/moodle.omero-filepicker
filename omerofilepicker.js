@@ -130,10 +130,17 @@ M.form_filepicker.init = function (Y, options) {
     M.form_dndupload.init(Y, dndoptions);
 
     // Checks whether an OMERO image has been selected (usefull after page refresh)
-    if (options["omero_image_url"] != null) {
+    var omero_image_url = options["omero_image_url"];
+    if(!omero_image_url) {
+        var imgs = document.getElementsByName("omero_image_url");
+        if(imgs && imgs.length>0){
+            omero_image_url = imgs[0].value;
+        }
+    }
+    if (omero_image_url != null) {
         M.form_filepicker.callback({
             client_id: dndoptions.clientid,
-            url: options["omero_image_url"]
+            url: omero_image_url
         });
     }
 };
