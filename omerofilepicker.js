@@ -34,7 +34,7 @@ M.form_filepicker.callback = function (params) {
 
         me.current_loaded_image = {
             omero_server_address: server_address,
-            image_id:  image_id,
+            image_id: image_id,
             frame_id: frame_id,
             moodle_viewer_for_omero_url: moodle_viewer_for_omero_url
         };
@@ -58,8 +58,8 @@ M.form_filepicker.callback = function (params) {
         // Update the reference to the selected OMERO image
         var forms = document.forms;
         for (var i in forms) {
-            if(forms[i].elements) {
-                if(forms[i].elements['omero_image_url']) {
+            if (forms[i].elements) {
+                if (forms[i].elements['omero_image_url']) {
                     forms[i].elements['omero_image_url'].value = url;
                 }
             }
@@ -131,13 +131,13 @@ M.form_filepicker.init = function (Y, options) {
 
     // Checks whether an OMERO image has been selected (usefull after page refresh)
     var omero_image_url = options["omero_image_url"];
-    if(!omero_image_url) {
+    if (!omero_image_url) {
         var imgs = document.getElementsByName("omero_image_url");
-        if(imgs && imgs.length>0){
+        if (imgs && imgs.length > 0) {
             omero_image_url = imgs[0].value;
         }
     }
-    if (omero_image_url != null) {
+    if (omero_image_url != null && omero_image_url.length > 0 && omero_image_url != 'none') {
         M.form_filepicker.callback({
             client_id: dndoptions.clientid,
             url: omero_image_url
@@ -150,7 +150,7 @@ M.form_filepicker.init = function (Y, options) {
  *
  * @returns {{server_address: string, image_id: *}|*}
  */
-M.form_filepicker.getCurrentLoadedImage = function(){
+M.form_filepicker.getCurrentLoadedImage = function () {
     return M.form_filepicker.current_loaded_image;
 }
 
