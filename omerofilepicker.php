@@ -103,7 +103,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         // set omero_image_url
         if(isset($_REQUEST['omero_image_url']))
             $options->omero_image_url = $_REQUEST['omero_image_url'];
-        else
+        else if(isset($this->omero_image_url))
             $options->omero_image_url = $this->omero_image_url;
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot ;
