@@ -40,13 +40,13 @@ M.form_filepicker.callback = function (params) {
         };
 
 
-        html = '<iframe width="100%" height="100%" style="min-height:100%;width:100%;"' +
+        html = '<iframe width="100%" height="400px" style="min-height:400px;width:100%;"' +
             ' frameborder="0"' +
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("92%") +
-            '&height=' + encodeURIComponent("100%") +
+            '&height=' + encodeURIComponent("400px") +
             '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
             ' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
