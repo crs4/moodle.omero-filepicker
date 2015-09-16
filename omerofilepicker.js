@@ -48,7 +48,7 @@ M.form_filepicker.callback = function (params) {
             '&width=' + encodeURIComponent("92%") +
             '&height=' + encodeURIComponent("400px") +
             '&showRoiTable=true' +
-            '" id="omero-viewer-frame" name="omero-viewer-frame" ' +
+            '" id="' + frame_id + '" name="' + frame_id + '" ' +
             ' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
             '></iframe>';
