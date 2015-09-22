@@ -20,14 +20,22 @@ M.form_filepicker.callback = function (params) {
         var static_root = server_address + "/static";
         var frame_id = "omero-viewer-frame";
 
+        console.log(proto, path, server_address, web_gateway, static_root);
+
         // compute the imageId from the actual url
         var image_id = url.substring(url.lastIndexOf("/") + 1);
+        var image_params = null;
+        var image_params_index = url.indexOf("?");
+        if(image_params_index>0){
+            image_params = url.substr(image_params_index+1);
+            image_id = url.substring(url.lastIndexOf("/")+1, image_params_index);
+        }
 
         // FIXME: only for debug
         console.log("Server Address: " + server_address);
         console.log("URL: " + url);
-        console.log(params);
-        console.log("IMAGE_ID", image_id);
+        console.log("IMAGE_ID: " + image_id);
+        console.log("IMAGE_PARAMS: " + image_params);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
         var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
@@ -48,6 +56,7 @@ M.form_filepicker.callback = function (params) {
             '&width=' + encodeURIComponent("92%") +
             '&height=' + encodeURIComponent("400px") +
             '&showRoiTable=true' +
+             '&' + image_params +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
             ' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
