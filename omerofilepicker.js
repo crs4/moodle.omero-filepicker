@@ -54,7 +54,7 @@ M.form_filepicker.callback = function (params) {
             '?id=' + +image_id +
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("92%") +
-            '&height=' + encodeURIComponent("400px") +
+            '&height=' + encodeURIComponent("500px") +
             '&showRoiTable=true' +
              '&' + image_params +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
