@@ -26,9 +26,17 @@ M.form_filepicker.callback = function (params) {
         var image_id = url.substring(url.lastIndexOf("/") + 1);
         var image_params = null;
         var image_params_index = url.indexOf("?");
-        if(image_params_index>0){
-            image_params = url.substr(image_params_index+1);
-            image_id = url.substring(url.lastIndexOf("/")+1, image_params_index);
+        if (image_params_index > 0) {
+            image_params = url.substr(image_params_index + 1);
+            image_id = url.substring(url.lastIndexOf("/") + 1, image_params_index);
+        }
+
+        var visible_rois = params['visible_rois'];
+        if (!visible_rois || visible_rois == "none") {
+            var visible_rois_index = url.indexOf("&visibleRois=");
+            if (visible_rois_index > 0) {
+                visible_rois = url.substr(visible_rois_index);
+            }
         }
 
         // FIXME: only for debug
@@ -36,6 +44,7 @@ M.form_filepicker.callback = function (params) {
         console.log("URL: " + url);
         console.log("IMAGE_ID: " + image_id);
         console.log("IMAGE_PARAMS: " + image_params);
+        console.log("VISIBLE_ROIS: " + visible_rois);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
         var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
@@ -56,7 +65,8 @@ M.form_filepicker.callback = function (params) {
             '&width=' + encodeURIComponent("92%") +
             '&height=' + encodeURIComponent("500px") +
             '&showRoiTable=true' +
-             '&' + image_params +
+            '&' + image_params +
+            '&visibleRois=' + visible_rois +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
             ' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
@@ -137,6 +147,7 @@ M.form_filepicker.init = function (Y, options) {
         containerid: 'file_info_' + options.client_id,
         contextid: options.context.id
     };
+
     M.form_dndupload.init(Y, dndoptions);
 
     // Checks whether an OMERO image has been selected (usefull after page refresh)
@@ -145,12 +156,18 @@ M.form_filepicker.init = function (Y, options) {
         var imgs = document.getElementsByName("omero_image_url");
         if (imgs && imgs.length > 0) {
             omero_image_url = imgs[0].value;
+            options.visible_rois = document.getElementsByName("visible_rois");
+            if (options.visible_rois && options.visible_rois.length > 0)
+                options.visible_rois = options.visible_rois[0].value;
         }
     }
+
     if (omero_image_url != null && omero_image_url.length > 0 && omero_image_url != 'none') {
         M.form_filepicker.callback({
             client_id: dndoptions.clientid,
-            url: omero_image_url
+            url: omero_image_url,
+            visible_rois: options.visible_rois,
+            options: dndoptions
         });
     }
 };
