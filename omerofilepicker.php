@@ -51,6 +51,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
         if(isset($options["omero_image_url"]))
             $this->omero_image_url = $options["omero_image_url"];
+        if(isset($options["visible_rois"]))
+            $this->visible_rois = $options["visible_rois"];
     }
 
     /**
@@ -100,21 +102,27 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $html = $this->_getTabs();
         $fp = new file_picker($args);
         $options = $fp->options;
-        // set omero_image_url
+        // sets omero_image_url
         if(isset($_REQUEST['omero_image_url']))
             $options->omero_image_url = $_REQUEST['omero_image_url'];
         else if(isset($this->omero_image_url))
             $options->omero_image_url = $this->omero_image_url;
+        // sets the list of ROIs to display
+        if(isset($_REQUEST['visible_rois']))
+            $options->visible_rois = $_REQUEST['visible_rois'];
+        else if(isset($this->visible_rois))
+            $options->visible_rois = $this->visible_rois;
+        // other settings
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot ;
         $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
                  '" value="' . $draftitemid . '" class="filepickerhidden"/>';
-
+        // initializes the filepicker controller
         $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
         $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
-
+        // defaults
         $nonjsfilepicker = new moodle_url('/repository/draftfiles_manager.php', array(
             'env' => 'filepicker',
             'action' => 'browse',
