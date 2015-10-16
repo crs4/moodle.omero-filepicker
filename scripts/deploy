@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# check whether there exists $MOODLE_WWW in your env
+if [[ -z ${MOODLE_WWW} ]]; then
+	echo "No MOODLE_WWW found in your environment !!!";
+	exit -1
+fi
+
+# computer the dir of this script
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# deploy the code
+cp "${DIR}/../omerofilepicker.php" "${MOODLE_WWW}/lib/form/omerofilepicker.php"
+cp "${DIR}/../omerofilepicker.js" "${MOODLE_WWW}/lib/form/omerofilepicker.js"
