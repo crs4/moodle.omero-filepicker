@@ -179,7 +179,7 @@ M.form_filepicker.init = function (Y, options) {
  */
 M.form_filepicker.getCurrentLoadedImage = function () {
     return M.form_filepicker.current_loaded_image;
-}
+};
 
 
 /**
@@ -192,4 +192,4 @@ M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
         detail: M.form_filepicker.current_loaded_image,
         bubbles: true
     }));
-}
+};
