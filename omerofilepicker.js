@@ -47,7 +47,7 @@ M.form_filepicker.callback = function (params) {
         console.log("VISIBLE_ROIS: " + visible_rois);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
-        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
+        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer/viewer.php";
 
         me.current_loaded_image = {
             omero_server_address: server_address,
