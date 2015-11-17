@@ -62,7 +62,7 @@ M.form_filepicker.callback = function (params) {
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
-            '&width=' + encodeURIComponent("92%") +
+            '&width=' + encodeURIComponent("100%") +
             '&height=' + encodeURIComponent("500px") +
             '&showRoiTable=true' +
             '&' + image_params +
