@@ -45,14 +45,17 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
      * @param array $attributes (optional) Either a typical HTML attribute string
      *              or an associative array
      * @param array $options set of options to initalize filepicker
+     * @throws Exception
      */
     function MoodleQuickForm_omerofilepicker($elementName = null, $elementLabel = null, $attributes = null, $options = null)
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
-        if(isset($options["omero_image_url"]))
+        if (isset($options["omero_image_url"]))
             $this->omero_image_url = $options["omero_image_url"];
-        if(isset($options["visible_rois"]))
+        if (isset($options["visible_rois"]))
             $this->visible_rois = $options["visible_rois"];
+
+        $this->omero_image_server = $options["omero_image_server"];
     }
 
     /**
@@ -63,11 +66,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     function toHtml()
     {
         global $CFG, $COURSE, $USER, $PAGE, $OUTPUT;
-
-        $endpoint = get_config('omero', 'omero_restendpoint');
-
-        $webgateway_server = substr($endpoint, 0, strpos($endpoint, "/webgateway"));
-        $omero_server = "";
 
         $id = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
@@ -103,21 +101,22 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $fp = new file_picker($args);
         $options = $fp->options;
         // sets omero_image_url
-        if(isset($_REQUEST['omero_image_url']))
+        if (isset($_REQUEST['omero_image_url']))
             $options->omero_image_url = $_REQUEST['omero_image_url'];
-        else if(isset($this->omero_image_url))
+        else if (isset($this->omero_image_url))
             $options->omero_image_url = $this->omero_image_url;
         // sets the list of ROIs to display
-        if(isset($_REQUEST['visible_rois']))
+        if (isset($_REQUEST['visible_rois']))
             $options->visible_rois = $_REQUEST['visible_rois'];
-        else if(isset($this->visible_rois))
+        else if (isset($this->visible_rois))
             $options->visible_rois = $this->visible_rois;
         // other settings
         $options->context = $PAGE->context;
-        $options->moodle_server = $CFG->wwwroot ;
+        $options->moodle_server = $CFG->wwwroot;
+        $options->omero_image_server = $this->omero_image_server;
         $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
-                 '" value="' . $draftitemid . '" class="filepickerhidden"/>';
+            '" value="' . $draftitemid . '" class="filepickerhidden"/>';
         // initializes the filepicker controller
         $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
@@ -150,7 +149,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
      * @param file_picker $fp
      * @return string
      */
-    public function render_file_picker(file_picker $fp)
+    public
+    function render_file_picker(file_picker $fp)
     {
         global $CFG, $OUTPUT, $USER;
         $options = $fp->options;
