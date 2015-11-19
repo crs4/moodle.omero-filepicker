@@ -11,16 +11,12 @@ M.form_filepicker.callback = function (params) {
     var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
 
     // FIXME: check whether there exists a better method to identify the file type
-    if (url.indexOf("webgateway") > -1) {
+    if (url.indexOf("webgateway") > -1 || url.indexOf("omero-image-repository") > -1) {
 
-        var proto = url.substring(0, 7);
-        var path = url.substring(7);
         var server_address = url.substring(0, url.indexOf("webgateway") - 1);
-        var web_gateway = server_address + "/webgateway";
-        var static_root = server_address + "/static";
-        var frame_id = "omero-viewer-frame";
 
-        console.log(proto, path, server_address, web_gateway, static_root);
+        // FIXME: configure me !!!
+        var frame_id = "omero-image-viewer";
 
         // compute the imageId from the actual url
         var image_id = url.substring(url.lastIndexOf("/") + 1);
