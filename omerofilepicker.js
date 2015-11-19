@@ -11,16 +11,12 @@ M.form_filepicker.callback = function (params) {
     var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
 
     // FIXME: check whether there exists a better method to identify the file type
-    if (url.indexOf("webgateway") > -1) {
+    if (url.indexOf("webgateway") > -1 || url.indexOf("omero-image-repository") > -1) {
 
-        var proto = url.substring(0, 7);
-        var path = url.substring(7);
         var server_address = url.substring(0, url.indexOf("webgateway") - 1);
-        var web_gateway = server_address + "/webgateway";
-        var static_root = server_address + "/static";
-        var frame_id = "omero-viewer-frame";
 
-        console.log(proto, path, server_address, web_gateway, static_root);
+        // FIXME: configure me !!!
+        var frame_id = "omero-image-viewer";
 
         // compute the imageId from the actual url
         var image_id = url.substring(url.lastIndexOf("/") + 1);
@@ -47,7 +43,7 @@ M.form_filepicker.callback = function (params) {
         console.log("VISIBLE_ROIS: " + visible_rois);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
-        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer.php";
+        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer/viewer.php";
 
         me.current_loaded_image = {
             omero_server_address: server_address,
@@ -57,18 +53,17 @@ M.form_filepicker.callback = function (params) {
         };
 
 
-        html = '<iframe width="100%" height="400px" style="min-height:400px;width:100%;"' +
-            ' frameborder="0"' +
+        html = '<iframe width="100%" height="400px" + //style="min-height:400px;width:100%;"'+
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
-            '&width=' + encodeURIComponent("92%") +
+            '&width=' + encodeURIComponent("100%") +
             '&height=' + encodeURIComponent("500px") +
             '&showRoiTable=true' +
             '&' + image_params +
             '&visibleRois=' + visible_rois +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
-            ' style="border: none;" ' +
+            //' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
             '></iframe>';
 
@@ -103,6 +98,12 @@ M.form_filepicker.callback = function (params) {
 M.form_filepicker.init = function (Y, options) {
     //Keep reference of YUI, so that it can be used in callback.
     M.form_filepicker.Y = Y;
+
+    // FIXME: disallow not needed repositories from the PHP code
+    for (var i in options.repositories) {
+        if (options.repositories[i].type !== "omero")
+            delete options.repositories[i];
+    }
 
     //For client side validation, initialize file status for this filepicker
     M.form_filepicker.instances[options.elementname] = {};
@@ -145,7 +146,8 @@ M.form_filepicker.init = function (Y, options) {
         formcallback: options.formcallback,
         containerprefix: '#file_info_',
         containerid: 'file_info_' + options.client_id,
-        contextid: options.context.id
+        contextid: options.context.id,
+        omero_image_server: options.omero_image_server
     };
 
     M.form_dndupload.init(Y, dndoptions);
@@ -179,7 +181,7 @@ M.form_filepicker.init = function (Y, options) {
  */
 M.form_filepicker.getCurrentLoadedImage = function () {
     return M.form_filepicker.current_loaded_image;
-}
+};
 
 
 /**
@@ -192,4 +194,4 @@ M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
         detail: M.form_filepicker.current_loaded_image,
         bubbles: true
     }));
-}
+};
