@@ -53,8 +53,7 @@ M.form_filepicker.callback = function (params) {
         };
 
 
-        html = '<iframe width="100%" height="400px" style="min-height:400px;width:100%;"' +
-            ' frameborder="0"' +
+        html = '<iframe width="100%" height="400px" + //style="min-height:400px;width:100%;"'+
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
@@ -64,7 +63,7 @@ M.form_filepicker.callback = function (params) {
             '&' + image_params +
             '&visibleRois=' + visible_rois +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
-            ' style="border: none;" ' +
+            //' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
             '></iframe>';
 
