@@ -45,14 +45,17 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
      * @param array $attributes (optional) Either a typical HTML attribute string
      *              or an associative array
      * @param array $options set of options to initalize filepicker
+     * @throws Exception
      */
     function MoodleQuickForm_omerofilepicker($elementName = null, $elementLabel = null, $attributes = null, $options = null)
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
-        if(isset($options["omero_image_url"]))
+        if (isset($options["omero_image_url"]))
             $this->omero_image_url = $options["omero_image_url"];
-        if(isset($options["visible_rois"]))
+        if (isset($options["visible_rois"]))
             $this->visible_rois = $options["visible_rois"];
+
+        $this->omero_image_server = $options["omero_image_server"];
     }
 
     /**

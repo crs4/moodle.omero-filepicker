@@ -146,7 +146,8 @@ M.form_filepicker.init = function (Y, options) {
         formcallback: options.formcallback,
         containerprefix: '#file_info_',
         containerid: 'file_info_' + options.client_id,
-        contextid: options.context.id
+        contextid: options.context.id,
+        omero_image_server: options.omero_image_server
     };
 
     M.form_dndupload.init(Y, dndoptions);
