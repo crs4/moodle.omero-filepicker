@@ -99,6 +99,12 @@ M.form_filepicker.init = function (Y, options) {
     //Keep reference of YUI, so that it can be used in callback.
     M.form_filepicker.Y = Y;
 
+    // FIXME: disallow not needed repositories from the PHP code
+    for (var i in options.repositories) {
+        if (options.repositories[i].type !== "omero")
+            delete options.repositories[i];
+    }
+
     //For client side validation, initialize file status for this filepicker
     M.form_filepicker.instances[options.elementname] = {};
     M.form_filepicker.instances[options.elementname].fileadded = false;
