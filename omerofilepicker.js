@@ -61,9 +61,8 @@ M.form_filepicker.callback = function (params) {
             '&height=' + encodeURIComponent("500px") +
             '&showRoiTable=true' +
             '&' + image_params +
-            '&visibleRois=' + visible_rois +
+            (visible_rois ? '&visibleRois=' + visible_rois : "") +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
-            //' style="border: none;" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
             '></iframe>';
 
