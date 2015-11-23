@@ -53,7 +53,7 @@ M.form_filepicker.callback = function (params) {
         };
 
 
-        html = '<iframe width="100%" height="400px" + //style="min-height:400px;width:100%;"'+
+        html = '<iframe width="100%" height="400px"' +
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
