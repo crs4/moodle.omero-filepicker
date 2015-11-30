@@ -52,18 +52,22 @@ M.form_filepicker.callback = function (params) {
             moodle_viewer_for_omero_url: moodle_viewer_for_omero_url
         };
 
+        // Update the URL of the current selected image
+        $("#omerofilepicker-selected-filename")[0].innerHTML = "id." + image_id;
 
+        // Builds the iframe containing the viewer
         html = '<iframe width="100%" height="400px"' +
             ' src="' + moodle_viewer_for_omero_url +
             '?id=' + +image_id +
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("100%") +
             '&height=' + encodeURIComponent("500px") +
-            '&showRoiTable=true' +
+            '&showRoiTable=false' +
             '&' + image_params +
             (visible_rois ? '&visibleRois=' + visible_rois : "") +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
+            ' style="margin: 0 auto;"' +
             '></iframe>';
 
         M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
