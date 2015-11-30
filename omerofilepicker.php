@@ -185,15 +185,27 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         }
         $html = <<<EOD
 
-            <!-- if no URL has been selected yet -->
-            <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
-                $icon_progress
-            </div>
-            <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none">
-            <div>
-                <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
-                <span> $maxsize </span>
-            </div>
+        <!-- Removes the label -->
+        <script type="text/javascript">$("#fitem_id_omeroimagefilereference div.fitemtitle").css("display", "none");</script>
+
+        <!-- if no URL has been selected yet -->
+        <strong>Current omero image:</strong>
+
+        <div style="float: right;">
+            <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
+            <span> $maxsize </span>
+        </div>
+EOD;
+        // Print the current selected file
+        $html.= ' <span id="omerofilepicker-selected-filename">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
+
+        $html .= <<<EOD
+
+        <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
+            $icon_progress
+        </div>
+
+        <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none; min-width: 100%;">
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
@@ -201,7 +213,7 @@ EOD;
             <!-- if a URL has been selected -->
             <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
                 <div class="filepicker-filename" style="border: none;">
-                    <div class="filepicker-container">$currentfile
+                    <div class="filepicker-container" style="border: none;">
                         <div class="dndupload-message">$strdndenabled <br/>
                             <div class="dndupload-arrow"></div>
                         </div>
@@ -214,9 +226,9 @@ EOD;
                     </div>
                 </div>
             </div>
+        </div>
 EOD;
         }
-        $html .= '</div>';
         return $html;
     }
 }
