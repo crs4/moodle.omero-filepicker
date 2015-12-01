@@ -62,7 +62,7 @@ M.form_filepicker.callback = function (params) {
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("100%") +
             '&height=' + encodeURIComponent("500px") +
-            '&showRoiTable=false' +
+            '&showRoiTable=' + M.form_filepicker.Y.show_roi_table +
             '&' + image_params +
             (visible_rois ? '&visibleRois=' + visible_rois : "") +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
@@ -118,6 +118,9 @@ M.form_filepicker.init = function (Y, options) {
     // Set MoodleServer
     M.form_filepicker.Y.moodle_server = options.moodle_server;
 
+    // Set 'show_roi_table' flag
+    M.form_filepicker.Y.show_roi_table = options.show_roi_table;
+
     if (!M.core_filepicker.instances[options.client_id]) {
         M.core_filepicker.init(Y, options);
     }
@@ -150,7 +153,8 @@ M.form_filepicker.init = function (Y, options) {
         containerprefix: '#file_info_',
         containerid: 'file_info_' + options.client_id,
         contextid: options.context.id,
-        omero_image_server: options.omero_image_server
+        omero_image_server: options.omero_image_server,
+        show_roi_table: options.show_roi_table
     };
 
     M.form_dndupload.init(Y, dndoptions);

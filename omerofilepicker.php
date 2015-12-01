@@ -56,6 +56,10 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $this->visible_rois = $options["visible_rois"];
 
         $this->omero_image_server = $options["omero_image_server"];
+
+        if (isset($options["show_roi_table"]))
+            $this->show_roi_table = $options["show_roi_table"];
+        else $this->show_roi_table = false;
     }
 
     /**
@@ -114,6 +118,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot;
         $options->omero_image_server = $this->omero_image_server;
+        $options->show_roi_table = $this->show_roi_table;
         $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
             '" value="' . $draftitemid . '" class="filepickerhidden"/>';
