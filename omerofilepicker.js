@@ -53,7 +53,7 @@ M.form_filepicker.callback = function (params) {
         };
 
         // Update the URL of the current selected image
-        $("#omerofilepicker-selected-filename")[0].innerHTML = "id." + image_id;
+        document.getElementById("omerofilepicker-selected-filename").innerHTML = "id." + image_id;
 
         // Builds the iframe containing the viewer
         html = '<iframe width="100%" height="400px"' +
