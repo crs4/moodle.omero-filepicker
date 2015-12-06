@@ -27,11 +27,11 @@ M.form_filepicker.callback = function (params) {
             image_id = url.substring(url.lastIndexOf("/") + 1, image_params_index);
         }
 
-        var visible_rois = params['visible_rois'];
-        if (!visible_rois || visible_rois == "none") {
-            var visible_rois_index = url.indexOf("&visibleRois=");
-            if (visible_rois_index > 0) {
-                visible_rois = url.substr(visible_rois_index);
+        var visiblerois = params['visiblerois'];
+        if (!visiblerois || visiblerois == "none") {
+            var visiblerois_index = url.indexOf("&visibleRois=");
+            if (visiblerois_index > 0) {
+                visiblerois = url.substr(visiblerois_index);
             }
         }
 
@@ -40,7 +40,7 @@ M.form_filepicker.callback = function (params) {
         console.log("URL: " + url);
         console.log("IMAGE_ID: " + image_id);
         console.log("IMAGE_PARAMS: " + image_params);
-        console.log("VISIBLE_ROIS: " + visible_rois);
+        console.log("VISIBLE_ROIS: " + visiblerois);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
         var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer/viewer.php";
@@ -54,6 +54,7 @@ M.form_filepicker.callback = function (params) {
 
         // Update the URL of the current selected image
         document.getElementById("omerofilepicker-selected-filename").innerHTML = "id." + image_id;
+        document.getElementById("id_omeroimageurl").setAttribute("value", url);
 
         // Builds the iframe containing the viewer
         html = '<iframe width="100%" height="400px"' +
@@ -62,9 +63,9 @@ M.form_filepicker.callback = function (params) {
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("100%") +
             '&height=' + encodeURIComponent("500px") +
-            '&showRoiTable=' + M.form_filepicker.Y.show_roi_table +
+            '&showRoiTable=' + M.form_filepicker.Y.showroitable +
             '&' + image_params +
-            (visible_rois ? '&visibleRois=' + visible_rois : "") +
+            (visiblerois ? '&visibleRois=' + visiblerois : "") +
             '" id="' + frame_id + '" name="' + frame_id + '" ' +
             ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
             ' style="margin: 0 auto;"' +
@@ -72,16 +73,6 @@ M.form_filepicker.callback = function (params) {
 
         M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
 
-        // FIXME: to enhance for supporting multiple viewers in one page (i.e., how to identify the proper form?)
-        // Update the reference to the selected OMERO image
-        var forms = document.forms;
-        for (var i in forms) {
-            if (forms[i].elements) {
-                if (forms[i].elements['omero_image_url']) {
-                    forms[i].elements['omero_image_url'].value = url;
-                }
-            }
-        }
     } else { // Default filepicker viewer
         html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
         html += '<div class="dndupload-progressbars"></div>';
@@ -118,8 +109,8 @@ M.form_filepicker.init = function (Y, options) {
     // Set MoodleServer
     M.form_filepicker.Y.moodle_server = options.moodle_server;
 
-    // Set 'show_roi_table' flag
-    M.form_filepicker.Y.show_roi_table = options.show_roi_table;
+    // Set 'showroitable' flag
+    M.form_filepicker.Y.showroitable = options.showroitable;
 
     if (!M.core_filepicker.instances[options.client_id]) {
         M.core_filepicker.init(Y, options);
@@ -154,28 +145,29 @@ M.form_filepicker.init = function (Y, options) {
         containerid: 'file_info_' + options.client_id,
         contextid: options.context.id,
         omero_image_server: options.omero_image_server,
-        show_roi_table: options.show_roi_table
+        showroitable: options.showroitable
     };
 
     M.form_dndupload.init(Y, dndoptions);
 
     // Checks whether an OMERO image has been selected (usefull after page refresh)
-    var omero_image_url = options["omero_image_url"];
-    if (!omero_image_url) {
-        var imgs = document.getElementsByName("omero_image_url");
-        if (imgs && imgs.length > 0) {
-            omero_image_url = imgs[0].value;
-            options.visible_rois = document.getElementsByName("visible_rois");
-            if (options.visible_rois && options.visible_rois.length > 0)
-                options.visible_rois = options.visible_rois[0].value;
-        }
+    var omeroimageurl = document.getElementsByName(options.elementname);
+    if (omeroimageurl && omeroimageurl.length > 0) {
+        var visibilerois = document.getElementsByName("visibilerois");
+        if (visibilerois && visibilerois.length > 0)
+            visibilerois = visibilerois[0].value;
+        var showroitable = document.getElementsByName("showroitable");
+        if (showroitable && showroitable.length > 0)
+            showroitable = showroitable[0].value;
+        omeroimageurl = omeroimageurl[0].value;
     }
 
-    if (omero_image_url != null && omero_image_url.length > 0 && omero_image_url != 'none') {
+    if (omeroimageurl != null && omeroimageurl.length > 0 && omeroimageurl != 'none') {
         M.form_filepicker.callback({
             client_id: dndoptions.clientid,
-            url: omero_image_url,
-            visible_rois: options.visible_rois,
+            url: omeroimageurl,
+            visiblerois: options.visiblerois,
+            showroitable: showroitable,
             options: dndoptions
         });
     }
