@@ -50,12 +50,15 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     function MoodleQuickForm_omerofilepicker($elementName = null, $elementLabel = null, $attributes = null, $options = null)
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
-        if (isset($options["omero_image_url"]))
-            $this->omero_image_url = $options["omero_image_url"];
-        if (isset($options["visible_rois"]))
-            $this->visible_rois = $options["visible_rois"];
 
         $this->omero_image_server = $options["omero_image_server"];
+
+        if (isset($options["visiblerois"]))
+            $this->visiblerois = $options["visiblerois"];
+
+        if (isset($options["showroitable"]))
+            $this->showroitable = $options["showroitable"];
+        else $this->showroitable = false;
     }
 
     /**
@@ -69,6 +72,9 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         $id = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
+        if (isset($this->_attributes['value']))
+            $value = $this->_attributes['value'];
+        else $value = "";
 
         if ($this->_flagFrozen) {
             return $this->getFrozenHtml();
@@ -98,25 +104,18 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $args->elementname = $elname;
 
         $html = $this->_getTabs();
+
         $fp = new file_picker($args);
         $options = $fp->options;
-        // sets omero_image_url
-        if (isset($_REQUEST['omero_image_url']))
-            $options->omero_image_url = $_REQUEST['omero_image_url'];
-        else if (isset($this->omero_image_url))
-            $options->omero_image_url = $this->omero_image_url;
-        // sets the list of ROIs to display
-        if (isset($_REQUEST['visible_rois']))
-            $options->visible_rois = $_REQUEST['visible_rois'];
-        else if (isset($this->visible_rois))
-            $options->visible_rois = $this->visible_rois;
+
         // other settings
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot;
         $options->omero_image_server = $this->omero_image_server;
+        $options->showroitable = $this->showroitable;
         $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
-            '" value="' . $draftitemid . '" class="filepickerhidden"/>';
+            '" value="' . $value . '" class="filepickerhidden"/>';
         // initializes the filepicker controller
         $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
@@ -185,15 +184,27 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         }
         $html = <<<EOD
 
-            <!-- if no URL has been selected yet -->
-            <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
-                $icon_progress
-            </div>
-            <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none">
-            <div>
-                <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
-                <span> $maxsize </span>
-            </div>
+        <!-- Removes the label -->
+        <script type="text/javascript">$("#fitem_id_omeroimagefilereference div.fitemtitle").css("display", "none");</script>
+
+        <!-- if no URL has been selected yet -->
+        <strong>Current omero image:</strong>
+
+        <div style="float: right;">
+            <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
+            <span> $maxsize </span>
+        </div>
+EOD;
+        // Print the current selected file
+        $html .= ' <span id="omerofilepicker-selected-filename">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
+
+        $html .= <<<EOD
+
+        <div class="filemanager-loading mdl-align" id='filepicker-loading-{$client_id}' style="border: none;">
+            $icon_progress
+        </div>
+
+        <div id="filepicker-wrapper-{$client_id}" class="mdl-left" style="display:none; min-width: 100%;">
 EOD;
         if ($options->env != 'url') {
             $html .= <<<EOD
@@ -201,7 +212,7 @@ EOD;
             <!-- if a URL has been selected -->
             <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
                 <div class="filepicker-filename" style="border: none;">
-                    <div class="filepicker-container">$currentfile
+                    <div class="filepicker-container" style="border: none;">
                         <div class="dndupload-message">$strdndenabled <br/>
                             <div class="dndupload-arrow"></div>
                         </div>
@@ -214,9 +225,9 @@ EOD;
                     </div>
                 </div>
             </div>
+        </div>
 EOD;
         }
-        $html .= '</div>';
         return $html;
     }
 }
