@@ -1,19 +1,38 @@
 <?php
 
+// Copyright (c) 2015-2016, CRS4
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 /**
  * Extension of the default Moodle filepicker for viewing images
  * picked from the Omero Repository for Moodle
  *
- * @package   core_form
- * @copyright 2015 CRS4
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    core_form
+ * @category   form
+ * @copyright  2015-2016 CRS4
+ * @licence    https://opensource.org/licenses/mit-license.php MIT licence
  */
 
 global $CFG;
 
 require_once("HTML/QuickForm/button.php");
 require_once($CFG->dirroot . '/repository/lib.php');
-
 require_once($CFG->dirroot . '/lib/form/filepicker.php');
 
 /**
@@ -21,10 +40,10 @@ require_once($CFG->dirroot . '/lib/form/filepicker.php');
  *
  * HTML class which extends the core filepicker element (based on button)
  *
- * @package   core_form
- * @category  form
- * @copyright 2015 CRS4
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later // FIXME: to be checked
+ * @package    core_form
+ * @category   form
+ * @copyright  2015-2016 CRS4
+ * @licence    https://opensource.org/licenses/mit-license.php MIT licence
  */
 class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 {
@@ -155,7 +174,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $options = $fp->options;
         $client_id = $options->client_id;
         $strsaved = get_string('filesaved', 'repository');
-        $straddfile = get_string('openpicker', 'repository');
+        $straddfile = get_string('choose_image', 'repository_omero');
         $strloading = get_string('loading', 'repository');
         $strdndenabled = get_string('dndenabled_inbox', 'moodle');
         $strdroptoupload = get_string('droptoupload', 'moodle');
@@ -182,13 +201,16 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         } else {
             $buttonname = '';
         }
+
+        $current_image_label = get_string('current_image', 'repository_omero');
+
         $html = <<<EOD
 
         <!-- Removes the label -->
         <script type="text/javascript">$("#fitem_id_omeroimagefilereference div.fitemtitle").css("display", "none");</script>
 
         <!-- if no URL has been selected yet -->
-        <strong>Current omero image:</strong>
+        <strong>$current_image_label:</strong>
 
         <div style="float: right;">
             <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
