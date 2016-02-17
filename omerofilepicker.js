@@ -90,7 +90,7 @@ M.form_filepicker.callback = function (params) {
             '?id=' + +image_id +
             '&frame=' + frame_id +
             '&width=' + encodeURIComponent("100%") +
-            '&height=' + encodeURIComponent("500px") +
+            '&height=' + encodeURIComponent("400px") +
             '&showRoiTable=' + M.form_filepicker.Y.showroitable +
             '&' + image_params +
             (visiblerois ? '&visibleRois=' + visiblerois : "") +
