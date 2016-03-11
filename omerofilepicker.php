@@ -47,6 +47,8 @@ require_once($CFG->dirroot . '/lib/form/filepicker.php');
  */
 class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 {
+
+
     /** @var string html for help button, if empty then no help will icon will be dispalyed. */
     public $_helpbutton = '';
 
@@ -55,6 +57,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     // We cannot do $_options = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
     // So I have to set null here, and do it in constructor
     protected $_options = array('maxbytes' => 0, 'accepted_types' => '*', 'return_types' => null);
+
+    protected $client_id = null;
 
     /**
      * Constructor
@@ -70,6 +74,15 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
 
+        if (isset($attributes))
+            foreach ($attributes as $k => $v)
+                $this->_attributes->{$k} = $v;
+
+        if (isset($options))
+            foreach ($options as $k => $v)
+                $this->_options[$k] = $v;
+
+        $this->client_id = uniqid();
         $this->omero_image_server = $options["omero_image_server"];
 
         if (isset($options["visiblerois"]))
@@ -78,6 +91,20 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         if (isset($options["showroitable"]))
             $this->showroitable = $options["showroitable"];
         else $this->showroitable = false;
+    }
+
+    public function getClientId()
+    {
+        return $this->client_id;
+    }
+
+    public function getFileInfoContainerId()
+    {
+        return "file_info_" . $this->getClientId(); // . ' .filepicker-filename';
+    }
+
+    public function getSelectedImageInputId(){
+        return "id_" . $this->_attributes["name"];
     }
 
     /**
@@ -110,13 +137,14 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $context = context_course::instance($COURSE->id);
         }
 
-        $client_id = uniqid();
 
         $args = new stdClass();
+
         // need these three to filter repositories list
         $args->accepted_types = $this->_options['accepted_types'] ? $this->_options['accepted_types'] : '*';
         $args->return_types = $this->_options['return_types'];
         $args->itemid = $draftitemid;
+        $args->client_id = $this->client_id;
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
         $args->buttonname = $elname . 'choose';
