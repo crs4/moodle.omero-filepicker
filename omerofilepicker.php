@@ -261,7 +261,7 @@ EOD;
             $html .= <<<EOD
 
             <!-- if a URL has been selected -->
-            <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
+            <div id="{$this->getFileInfoContainerId()}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
                 <div class="filepicker-filename" style="border: none;">
                     <div class="filepicker-container" style="border: none;">
                         <div class="dndupload-message">$strdndenabled <br/>
