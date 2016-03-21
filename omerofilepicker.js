@@ -90,16 +90,6 @@ M.form_filepicker.callback = function (params) {
         document.getElementById("omerofilepicker-selected-filename").innerHTML = "id." + image_id;
         document.getElementById("id_omeroimageurl").setAttribute("value", url);
 
-        // Builds the iframe containing the viewer
-        html = '<div id="' + ("graphics_container") + '" class="image-viewer-container" style="position: relative; height: 400px" >' +
-            '<div id="' + ("image-viewer-container") + '" style="position: absolute; width: 100%; height: 400px; margin: auto; z-index: 0;"></div>' +
-            '<canvas id="' + ('annotations_canvas') + '" style="position: absolute; width: 100%; height: 400px; margin: auto; z-index: 1;"></canvas>' +
-            '<div id="' + ("image-viewer-container") + '-loading-dialog" class="image-viewer-loading-dialog" style="position: absolute; width: 100%; height: 400px;"></div>' +
-            '</div>';
-
-        M.form_filepicker.Y.one(filepicker_container_id).setContent(html);
-
-
     } else { // Default filepicker viewer
         html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
         html += '<div class="dndupload-progressbars"></div>';
