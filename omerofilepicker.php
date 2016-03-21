@@ -145,6 +145,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $args->return_types = $this->_options['return_types'];
         $args->itemid = $draftitemid;
         $args->client_id = $this->client_id;
+        $args->fileinfo_container_id = $this->getFileInfoContainerId();
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
         $args->buttonname = $elname . 'choose';
