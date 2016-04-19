@@ -5,7 +5,6 @@ if [[ -z ${MOODLE_WWW} ]]; then
 	exit -1
 fi
 
-registered=$(grep -o 'MoodleQuickForm_omerofilepicker' ${MOODLE_WWW}/lib/formslib.php | wc -l)
 if grep -o 'MoodleQuickForm_omerofilepicker' ${MOODLE_WWW}/lib/formslib.php ; then
 	echo -e "\n NOTICE: 'omerofilepicker' form already registered."
 else	
