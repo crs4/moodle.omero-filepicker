@@ -4,11 +4,11 @@ An extended Moodle filepicker which supports the Moodle OMERO repository (see [m
 
 ## How to install
 
-- copy this repository into the lib/form folder of your Moodle installation
-- add the following line at the end of the `<MOODLE-ROOT-DIR>/lib/formslib.php` file:
+- copy this repository into the `lib/form/omerofilepicker` folder of your Moodle installation
+- run the `register.sh` script (you need to properly set the `MOODLE_WWW` variable of your environment to point to the root folder of your Moodle installation) or add the following line at the end of the `<MOODLE-ROOT-DIR>/lib/formslib.php` file:
 
         MoodleQuickForm::registerElementType('omerofilepicker',   	      	   
-         	    "$CFG->libdir/form/omerofilepicker.php", 'MoodleQuickForm_omerofilepicker');
+         	    "$CFG->libdir/form/omerofilepicker/omerofilepicker.php", 'MoodleQuickForm_omerofilepicker');
 	
 	
 ## Usage
