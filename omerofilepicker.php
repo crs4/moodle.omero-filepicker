@@ -243,7 +243,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         <div style="float: right;">
             <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
-            <span> $maxsize </span>
+            <!--<span> $maxsize </span>-->
         </div>
 EOD;
         // Print the current selected file
