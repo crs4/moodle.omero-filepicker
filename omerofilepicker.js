@@ -30,6 +30,8 @@ M.form_filepicker = {};
 M.form_filepicker.Y = null;
 M.form_filepicker.instances = [];
 
+var me = M.form_filepicker;
+
 M.form_filepicker.callback = function (params) {
 
     var me = M.form_filepicker;
@@ -45,6 +47,8 @@ M.form_filepicker.callback = function (params) {
 
         // FIXME: configure me !!!
         var frame_id = "omero-image-viewer";
+
+        var filepicker_container_id = '#file_info_' + params['client_id']; // + ' .filepicker-filename';
 
         // compute the imageId from the actual url
         var image_id = url.substring(url.lastIndexOf("/") + 1);
@@ -71,10 +75,12 @@ M.form_filepicker.callback = function (params) {
         console.log("VISIBLE_ROIS: " + visiblerois);
         console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
 
+
         var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer/viewer.php";
 
-        me.current_loaded_image = {
+        me.current_selected_image = {
             omero_server_address: server_address,
+            container_id: filepicker_container_id,
             image_id: image_id,
             frame_id: frame_id,
             moodle_viewer_for_omero_url: moodle_viewer_for_omero_url
@@ -83,23 +89,6 @@ M.form_filepicker.callback = function (params) {
         // Update the URL of the current selected image
         document.getElementById("omerofilepicker-selected-filename").innerHTML = "id." + image_id;
         document.getElementById("id_omeroimageurl").setAttribute("value", url);
-
-        // Builds the iframe containing the viewer
-        html = '<iframe width="100%" height="400px"' +
-            ' src="' + moodle_viewer_for_omero_url +
-            '?id=' + +image_id +
-            '&frame=' + frame_id +
-            '&width=' + encodeURIComponent("100%") +
-            '&height=' + encodeURIComponent("400px") +
-            '&showRoiTable=' + M.form_filepicker.Y.showroitable +
-            '&' + image_params +
-            (visiblerois ? '&visibleRois=' + visiblerois : "") +
-            '" id="' + frame_id + '" name="' + frame_id + '" ' +
-            ' onload="M.form_filepicker.notifyFrameLoaded(this)" ' +
-            ' style="margin: 0 auto;"' +
-            '></iframe>';
-
-        M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
 
     } else { // Default filepicker viewer
         html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
@@ -202,12 +191,12 @@ M.form_filepicker.init = function (Y, options) {
 };
 
 /**
- * Returns a JSON description of the current loaded image
+ * Returns a JSON description of the currently selected image
  *
  * @returns {{server_address: string, image_id: *}|*}
  */
-M.form_filepicker.getCurrentLoadedImage = function () {
-    return M.form_filepicker.current_loaded_image;
+me.getCurrentSelectedImage = function () {
+    return M.form_filepicker.current_selected_image;
 };
 
 
@@ -218,7 +207,7 @@ M.form_filepicker.getCurrentLoadedImage = function () {
 M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
     console.log("Frame '" + frame_obj.id + "' is loaded!!!", frame_obj);
     document.dispatchEvent(new CustomEvent('frameLoaded', {
-        detail: M.form_filepicker.current_loaded_image,
+        detail: M.form_filepicker.current_selected_image,
         bubbles: true
     }));
 };

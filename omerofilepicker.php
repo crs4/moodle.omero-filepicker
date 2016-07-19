@@ -47,6 +47,8 @@ require_once($CFG->dirroot . '/lib/form/filepicker.php');
  */
 class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 {
+
+
     /** @var string html for help button, if empty then no help will icon will be dispalyed. */
     public $_helpbutton = '';
 
@@ -55,6 +57,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     // We cannot do $_options = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
     // So I have to set null here, and do it in constructor
     protected $_options = array('maxbytes' => 0, 'accepted_types' => '*', 'return_types' => null);
+
+    protected $client_id = null;
 
     /**
      * Constructor
@@ -70,6 +74,15 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
     {
         parent::MoodleQuickForm_filepicker($elementName, $elementLabel, $attributes, $options);
 
+        if (isset($attributes))
+            foreach ($attributes as $k => $v)
+                $this->_attributes->{$k} = $v;
+
+        if (isset($options))
+            foreach ($options as $k => $v)
+                $this->_options[$k] = $v;
+
+        $this->client_id = uniqid();
         $this->omero_image_server = $options["omero_image_server"];
 
         if (isset($options["visiblerois"]))
@@ -78,6 +91,20 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         if (isset($options["showroitable"]))
             $this->showroitable = $options["showroitable"];
         else $this->showroitable = false;
+    }
+
+    public function getClientId()
+    {
+        return $this->client_id;
+    }
+
+    public function getFileInfoContainerId()
+    {
+        return "file_info_" . $this->getClientId(); // . ' .filepicker-filename';
+    }
+
+    public function getSelectedImageInputId(){
+        return "id_" . $this->_attributes["name"];
     }
 
     /**
@@ -110,13 +137,15 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $context = context_course::instance($COURSE->id);
         }
 
-        $client_id = uniqid();
 
         $args = new stdClass();
+
         // need these three to filter repositories list
         $args->accepted_types = $this->_options['accepted_types'] ? $this->_options['accepted_types'] : '*';
         $args->return_types = $this->_options['return_types'];
         $args->itemid = $draftitemid;
+        $args->client_id = $this->client_id;
+        $args->fileinfo_container_id = $this->getFileInfoContainerId();
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
         $args->buttonname = $elname . 'choose';
@@ -136,7 +165,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
             '" value="' . $value . '" class="filepickerhidden"/>';
         // initializes the filepicker controller
-        $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker.js',
+        $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
         $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
         // defaults
@@ -214,7 +243,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         <div style="float: right;">
             <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
-            <span> $maxsize </span>
+            <!--<span> $maxsize </span>-->
         </div>
 EOD;
         // Print the current selected file
@@ -232,7 +261,7 @@ EOD;
             $html .= <<<EOD
 
             <!-- if a URL has been selected -->
-            <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
+            <div id="{$this->getFileInfoContainerId()}" class="mdl-left filepicker-filelist" style="border: none; position: relative;">
                 <div class="filepicker-filename" style="border: none;">
                     <div class="filepicker-container" style="border: none;">
                         <div class="dndupload-message">$strdndenabled <br/>
