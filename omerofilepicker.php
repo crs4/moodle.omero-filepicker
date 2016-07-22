@@ -54,7 +54,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
     /** @var array options provided to initalize filemanager */
     // PHP doesn't support 'key' => $value1 | $value2 in class definition
-    // We cannot do $_options = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
+    // We cannot do $config = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
     // So I have to set null here, and do it in constructor
     protected $_options = array('maxbytes' => 0, 'accepted_types' => '*', 'return_types' => null);
 
@@ -103,7 +103,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         return "file_info_" . $this->getClientId(); // . ' .filepicker-filename';
     }
 
-    public function getSelectedImageInputId(){
+    public function getSelectedImageInputId()
+    {
         return "id_" . $this->_attributes["name"];
     }
 
@@ -150,6 +151,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $args->context = $PAGE->context;
         $args->buttonname = $elname . 'choose';
         $args->elementname = $elname;
+        $args->filename_element = "${elname}-selected-filename";
 
         $html = $this->_getTabs();
 
@@ -167,7 +169,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         // initializes the filepicker controller
         $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
-        $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
+        $PAGE->requires->js_init_call('M.omero_filepicker.init', array($fp->options), true, $module);
         // defaults
         $nonjsfilepicker = new moodle_url('/repository/draftfiles_manager.php', array(
             'env' => 'filepicker',
@@ -247,7 +249,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         </div>
 EOD;
         // Print the current selected file
-        $html .= ' <span id="omerofilepicker-selected-filename">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
+        $html .= ' <span id="' . $options->filename_element . '">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
 
         $html .= <<<EOD
 
