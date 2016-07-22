@@ -119,6 +119,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         $id = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
+        $buttonname = $this->_attributes['buttonname'];
+
         if (isset($this->_attributes['value']))
             $value = $this->_attributes['value'];
         else $value = "";
@@ -138,7 +140,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $context = context_course::instance($COURSE->id);
         }
 
-
         $args = new stdClass();
 
         // need these three to filter repositories list
@@ -149,8 +150,10 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $args->fileinfo_container_id = $this->getFileInfoContainerId();
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
-        $args->buttonname = $elname . 'choose';
         $args->elementname = $elname;
+        $args->buttonname = isset($buttonname) ? $buttonname : $elname . 'choose';
+        $args->buttonid = 'id_' . $args->buttonname;
+
         $args->filename_element = "${elname}-selected-filename";
 
         $html = $this->_getTabs();
@@ -204,6 +207,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         global $CFG, $OUTPUT, $USER;
         $options = $fp->options;
         $client_id = $options->client_id;
+        $buttonid = $options->buttonid;
         $strsaved = get_string('filesaved', 'repository');
         $straddfile = get_string('choose_image', 'repository_omero');
         $strloading = get_string('loading', 'repository');
@@ -226,11 +230,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $maxsize = '';
         } else {
             $maxsize = get_string('maxfilesize', 'moodle', display_size($size));
-        }
-        if ($options->buttonname) {
-            $buttonname = ' name="' . $options->buttonname . '"';
-        } else {
-            $buttonname = '';
         }
 
         $current_image_label = get_string('current_image', 'repository_omero');
