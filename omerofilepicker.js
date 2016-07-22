@@ -96,10 +96,6 @@ M.omero_filepicker = function (Y, options) {
         M.omero_filepicker.default_configuration = options;
         console.log(options);
 
-        //For client side validation, initialize file status for this filepicker
-        M.omero_filepicker.instances[options.elementname] = {};
-        M.omero_filepicker.instances[options.elementname].fileadded = false;
-
         Y.on('click', function (e, client_id) {
             e.preventDefault();
             if (this.ancestor('.fitem.disabled') == null) {
