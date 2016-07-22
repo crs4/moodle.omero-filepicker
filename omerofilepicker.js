@@ -96,12 +96,13 @@ M.omero_filepicker = function (Y, options) {
         M.omero_filepicker.default_configuration = options;
         console.log(options);
 
+        // handler for the click event
         Y.on('click', function (e, client_id) {
             e.preventDefault();
             if (this.ancestor('.fitem.disabled') == null) {
                 filepicker_helper.show();
             }
-        }, '#filepicker-button-' + options.client_id, null, options.client_id);
+        }, '#' + options["buttonid"], null, options.client_id);
 
         var item = document.getElementById('nonjs-filepicker-' + options.client_id);
         if (item) {
