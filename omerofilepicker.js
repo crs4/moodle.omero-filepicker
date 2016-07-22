@@ -115,7 +115,6 @@ M.omero_filepicker = function (Y, options) {
 
         // init dndoptions
         var dndoptions = {
-            elementname: "pippo",
             clientid: options.client_id,
             moodle_server: options.moodle_server,
             acceptedtypes: options.accepted_types,
