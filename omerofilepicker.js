@@ -235,6 +235,7 @@ M.omero_filepicker.getId = function (options) {
  * This function is called for each file picker on page.
  */
 M.omero_filepicker.init = function (Y, options) {
+    M.omero_filepicker.Y = Y;
     M.omero_filepicker.default_configuration = options;
     M.omero_filepicker.dndoptions = {
         clientid: options.client_id,
