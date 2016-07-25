@@ -147,6 +147,9 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
                 options: dndoptions
             });
         }
+
+        if (!M.omero_filepicker.instances[me._id])
+            M.omero_filepicker.instances[me._id] = me;
     };
 
 
