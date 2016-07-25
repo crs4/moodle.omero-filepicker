@@ -227,7 +227,7 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
     };
 
     // initialize the current instance
-    this._initialize(options);
+    this._initialize(options, dndoptions, use_defaults);
 };
 
 
