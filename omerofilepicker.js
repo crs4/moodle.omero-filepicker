@@ -27,7 +27,7 @@
  * @copyright  2015-2016 CRS4
  * @license    https://opensource.org/licenses/mit-license.php MIT license
  */
-M.omero_filepicker = function (Y, options) {
+M.omero_filepicker = function (options, dndoptions, use_defaults) {
 
     // reference to the current scope
     var me = this;
@@ -58,20 +58,30 @@ M.omero_filepicker = function (Y, options) {
      * @returns {boolean}
      * @private
      */
-    this._initialize = function (options) {
+    this._initialize = function (options, dndoptions, use_defaults) {
 
-        // properties
-        me._id = M.omero_filepicker.getId(options);
-        me.fileadded = false;
-        me.config = options;
+        // set configurations
+        me.config = !use_defaults ? {} : JSON.parse(JSON.stringify(M.omero_filepicker.default_configuration));
+        for (var attrname in options) {
+            me.config[attrname] = options[attrname];
+        }
+
+        me.dndoptions = !use_defaults ? {} : JSON.parse(JSON.stringify(M.omero_filepicker.dndoptions));
+        for (var attrname in dndoptions) {
+            me.dndoptions[attrname] = dndoptions[attrname];
+        }
 
         //Keep reference of YUI, so that it can be used in callback.
-        me.Y = Y || YUI();
+        me.Y = M.omero_filepicker.Y || YUI();
+
+        // properties
+        me.fileadded = false;
+        me._id = M.omero_filepicker.getId(me.config);
 
         // FIXME: disallow all repositories but the Omero one
-        for (var i in options.repositories) {
-            if (options.repositories[i].type !== "omero")
-                delete options.repositories[i];
+        for (var i in me.config.repositories) {
+            if (me.config.repositories[i].type !== "omero")
+                delete me.config.repositories[i];
         }
 
         //Set filepicker callback
@@ -255,8 +265,7 @@ M.omero_filepicker.init = function (Y, options) {
     };
     console.log("Default configuration", options);
     var id = M.omero_filepicker.getId(options);
-    if (!M.omero_filepicker.instances[id])
-        M.omero_filepicker.instances[id] = new M.omero_filepicker(Y, options);
+    return new M.omero_filepicker(options, M.omero_filepicker.dndoptions, false);
 };
 
 /**
