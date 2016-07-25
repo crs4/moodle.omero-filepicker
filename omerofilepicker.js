@@ -257,7 +257,7 @@ M.omero_filepicker.getId = function (options) {
  */
 M.omero_filepicker.init = function (Y, options) {
     M.omero_filepicker.Y = Y;
-    M.omero_filepicker.default_configuration = options;
+    M.omero_filepicker.default_configuration = JSON.parse(JSON.stringify(options));
     M.omero_filepicker.dndoptions = {
         clientid: options.client_id,
         moodle_server: options.moodle_server,
