@@ -209,9 +209,13 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
             };
 
             // Update the URL of the current selected image
-            document.getElementById(filenameElement).innerHTML = "id." + image_id;
-            document.getElementById("id_" + elementName).setAttribute("value", url);
+            if (filenameElement && document.getElementById(filenameElement)) {
+                document.getElementById(filenameElement).innerHTML = "id." + image_id;
+            }
 
+            if (document.getElementById("id_" + elementName)) {
+                document.getElementById("id_" + elementName).setAttribute("value", url);
+            }
 
 
         } else { // Default filepicker viewer
@@ -223,7 +227,8 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         //When file is added then set status of global variable to true
         me.fileadded = true;
         //generate event to indicate changes which will be used by disable if or validation code
-        me.Y.one('#id_' + elementName).simulate('change');
+        if (me.Y.one('#id_' + elementName))
+            me.Y.one('#id_' + elementName).simulate('change');
     };
 
     // initialize the current instance
