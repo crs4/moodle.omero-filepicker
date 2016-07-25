@@ -138,6 +138,7 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
             omeroimageurl = omeroimageurl[0].value;
         }
 
+        // Immediately apply the callback if the hidden element containing the selected image is defined
         if (omeroimageurl != null && omeroimageurl.length > 0 && omeroimageurl != 'none') {
             me.callback({
                 client_id: dndoptions.clientid,
@@ -211,10 +212,12 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
             document.getElementById(filenameElement).innerHTML = "id." + image_id;
             document.getElementById("id_" + elementName).setAttribute("value", url);
 
+
+
         } else { // Default filepicker viewer
             html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
             html += '<div class="dndupload-progressbars"></div>';
-            M.omero_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
+            me.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
         }
 
         //When file is added then set status of global variable to true
