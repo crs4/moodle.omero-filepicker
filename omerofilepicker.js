@@ -85,17 +85,17 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         }
 
         //Set filepicker callback
-        options.formcallback = me.callback;
+        me.config.formcallback = me.callback;
 
         // Initialize the CoreFilepickerHelper
         if (!M.core_filepicker.instances[me._id]) {
-            M.core_filepicker.init(Y, options);
+            M.core_filepicker.init(me.Y, me.config);
         }
 
         // Get a reference to the System FilePickerHelper
-        var filepicker_helper = M.core_filepicker.instances[options.client_id];
+        var filepicker_helper = M.core_filepicker.instances[me.config.client_id];
         if (!filepicker_helper) {
-            console.error("Unable to find the FilePickerHelper for the client " + options.client_id);
+            console.error("Unable to find the FilePickerHelper for the client " + me.config.client_id);
             return false;
         }
 
