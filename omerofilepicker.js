@@ -41,6 +41,26 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         return this._id;
     };
 
+
+    /**
+     * Add new event listener
+     *
+     * @param listener
+     */
+    this.addListener = function (listener) {
+        me._listeners.push(listener);
+    };
+
+
+    /**
+     * Remove an event listener
+     *
+     * @param listener
+     */
+    this.removeListener = function (listener) {
+        me._listeners.remove(listener);
+    };
+
     /**
      * Returns a JSON description of the currently selected image
      *
@@ -76,6 +96,7 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
 
         // properties
         me.fileadded = false;
+        me._listeners = [];
         me._id = M.omero_filepicker.getId(me.config);
 
         // FIXME: disallow all repositories but the Omero one
@@ -217,6 +238,8 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
                 document.getElementById("id_" + elementName).setAttribute("value", url);
             }
 
+            for (var l  in me._listeners)
+                me._listeners[l].onSelectedImage(me._current_selected_image, me);
 
         } else { // Default filepicker viewer
             html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
