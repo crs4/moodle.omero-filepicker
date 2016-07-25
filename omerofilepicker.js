@@ -113,24 +113,8 @@ M.omero_filepicker = function (Y, options) {
             item.style.display = '';
         }
 
-        // init dndoptions
-        var dndoptions = {
-            clientid: options.client_id,
-            moodle_server: options.moodle_server,
-            acceptedtypes: options.accepted_types,
-            author: options.author,
-            maxfiles: -1,
-            maxbytes: options.maxbytes,
-            itemid: options.itemid,
-            repositories: options.repositories,
-            formcallback: options.formcallback,
-            containerprefix: '#file_info_',
-            containerid: 'file_info_' + options.client_id,
-            contextid: options.context.id,
-            omero_image_server: options.omero_image_server,
-            showroitable: options.showroitable
-        };
-        M.form_dndupload.init(Y, dndoptions);
+        // Init dndoptions
+        M.form_dndupload.init(Y, me.dndoptions);
 
         // Checks whether an OMERO image has been selected (usefull after page refresh)
         var omeroimageurl = document.getElementsByName(options.elementname);
@@ -252,6 +236,22 @@ M.omero_filepicker.getId = function (options) {
  */
 M.omero_filepicker.init = function (Y, options) {
     M.omero_filepicker.default_configuration = options;
+    M.omero_filepicker.dndoptions = {
+        clientid: options.client_id,
+        moodle_server: options.moodle_server,
+        acceptedtypes: options.accepted_types,
+        author: options.author,
+        maxfiles: -1,
+        maxbytes: options.maxbytes,
+        itemid: options.itemid,
+        repositories: options.repositories,
+        formcallback: options.formcallback,
+        containerprefix: '#file_info_',
+        containerid: 'file_info_' + options.client_id,
+        contextid: options.context.id,
+        omero_image_server: options.omero_image_server,
+        showroitable: options.showroitable
+    };
     console.log("Default configuration", options);
     var id = M.omero_filepicker.getId(options);
     if (!M.omero_filepicker.instances[id])
