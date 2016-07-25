@@ -127,7 +127,7 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         M.form_dndupload.init(Y, me.dndoptions);
 
         // Checks whether an OMERO image has been selected (usefull after page refresh)
-        var omeroimageurl = document.getElementsByName(options.elementname);
+        var omeroimageurl = document.getElementsByName(me.config.elementname);
         if (omeroimageurl && omeroimageurl.length > 0) {
             var visibilerois = document.getElementsByName("visibilerois");
             if (visibilerois && visibilerois.length > 0)
