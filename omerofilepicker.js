@@ -102,23 +102,23 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         // Set the reference to the System FilePickerHelper
         me._helper = filepicker_helper;
 
-        // just for debug
-        M.omero_filepicker.default_configuration = options;
-        console.log(options);
-
-        // handler for the click event
-        Y.on('click', function (e, client_id) {
-            e.preventDefault();
-            if (this.ancestor('.fitem.disabled') == null) {
+        // Set the handler of the CLICK event triggered by the button with ID me.config["buttonid"]
+        var button_element = document.getElementById(me.config["buttonid"]);
+        if (!button_element)
+            console.error("Unable to find the button element with ID " + me.config["buttonid"]);
+        else {
+            button_element.onclick = function (e) {
+                e.preventDefault();
                 filepicker_helper.show();
-            }
-        }, '#' + options["buttonid"], null, options.client_id);
+            };
+        }
 
-        var item = document.getElementById('nonjs-filepicker-' + options.client_id);
+        // Update DOM
+        var item = document.getElementById('nonjs-filepicker-' + me.config.client_id);
         if (item) {
             item.parentNode.removeChild(item);
         }
-        item = document.getElementById('filepicker-wrapper-' + options.client_id);
+        item = document.getElementById('filepicker-wrapper-' + me.config.client_id);
         if (item) {
             item.style.display = '';
         }
