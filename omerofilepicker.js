@@ -18,137 +18,270 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
- * OmeroFilepickerForm callback handler.
+ * Builds a new instance of OmeroFilePicker
  *
- * @package    core_form
+ * @param Y reference to the current YUI instance
+ * @param options an JSON object containing the set of configuration options
+ *
  * @category   form
  * @copyright  2015-2016 CRS4
  * @license    https://opensource.org/licenses/mit-license.php MIT license
  */
+M.omero_filepicker = function (options, dndoptions, use_defaults) {
 
-M.form_filepicker = {};
-M.form_filepicker.Y = null;
-M.form_filepicker.instances = [];
+    // reference to the current scope
+    var me = this;
 
-var me = M.form_filepicker;
+    /**
+     * Returns the ID of the current filepicker
+     *
+     * @returns string
+     */
+    this.getId = function () {
+        return this._id;
+    };
 
-M.form_filepicker.callback = function (params) {
 
-    var me = M.form_filepicker;
-    var html = "";
-    var url = params['url'];
+    /**
+     * Add new event listener
+     *
+     * @param listener
+     */
+    this.addListener = function (listener) {
+        me._listeners.push(listener);
+    };
 
-    var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
 
-    // FIXME: check whether there exists a better method to identify the file type
-    if (url.indexOf("webgateway") > -1 || url.indexOf("omero-image-repository") > -1) {
+    /**
+     * Remove an event listener
+     *
+     * @param listener
+     */
+    this.removeListener = function (listener) {
+        me._listeners.remove(listener);
+    };
 
-        var server_address = url.substring(0, url.indexOf("webgateway") - 1);
+    /**
+     * Returns a JSON description of the currently selected image
+     *
+     * @returns {{server_address: string, image_id: *}|*}
+     */
+    this.getCurrentSelectedImage = function () {
+        return me._current_selected_image;
+    };
 
-        // FIXME: configure me !!!
-        var frame_id = "omero-image-viewer";
 
-        var filepicker_container_id = '#file_info_' + params['client_id']; // + ' .filepicker-filename';
+    /**
+     * Initialize the current instance of OmeroFilePicker
+     *
+     * @param options
+     * @returns {boolean}
+     * @private
+     */
+    this._initialize = function (options, dndoptions, use_defaults) {
 
-        // compute the imageId from the actual url
-        var image_id = url.substring(url.lastIndexOf("/") + 1);
-        var image_params = null;
-        var image_params_index = url.indexOf("?");
-        if (image_params_index > 0) {
-            image_params = url.substr(image_params_index + 1);
-            image_id = url.substring(url.lastIndexOf("/") + 1, image_params_index);
+        // set configurations
+        me.config = !use_defaults ? {} : JSON.parse(JSON.stringify(M.omero_filepicker.default_configuration));
+        for (var attrname in options) {
+            me.config[attrname] = options[attrname];
         }
 
-        var visiblerois = params['visiblerois'];
-        if (!visiblerois || visiblerois == "none") {
-            var visiblerois_index = url.indexOf("&visibleRois=");
-            if (visiblerois_index > 0) {
-                visiblerois = url.substr(visiblerois_index);
+        me.dndoptions = !use_defaults ? {} : JSON.parse(JSON.stringify(M.omero_filepicker.dndoptions));
+        for (var attrname in dndoptions) {
+            me.dndoptions[attrname] = dndoptions[attrname];
+        }
+
+        //Keep reference of YUI, so that it can be used in callback.
+        me.Y = M.omero_filepicker.Y || YUI();
+
+        // properties
+        me.fileadded = false;
+        me._listeners = [];
+        me._id = M.omero_filepicker.getId(me.config);
+
+        // FIXME: disallow all repositories but the Omero one
+        for (var i in me.config.repositories) {
+            if (me.config.repositories[i].type !== "omero")
+                delete me.config.repositories[i];
+        }
+
+        //Set filepicker callback
+        me.config.formcallback = me.callback;
+
+        // Initialize the CoreFilepickerHelper
+        if (!M.core_filepicker.instances[me._id]) {
+            M.core_filepicker.init(me.Y, me.config);
+        }
+
+        // Get a reference to the System FilePickerHelper
+        var filepicker_helper = M.core_filepicker.instances[me.config.client_id];
+        if (!filepicker_helper) {
+            console.error("Unable to find the FilePickerHelper for the client " + me.config.client_id);
+            return false;
+        }
+
+        // Set the reference to the System FilePickerHelper
+        me._helper = filepicker_helper;
+
+        // Set the handler of the CLICK event triggered by the button with ID me.config["buttonid"]
+        var button_element = document.getElementById(me.config["buttonid"]);
+        if (!button_element)
+            console.error("Unable to find the button element with ID " + me.config["buttonid"]);
+        else {
+            button_element.onclick = function (e) {
+                e.preventDefault();
+                filepicker_helper.show();
+            };
+        }
+
+        // Update DOM
+        var item = document.getElementById('nonjs-filepicker-' + me.config.client_id);
+        if (item) {
+            item.parentNode.removeChild(item);
+        }
+        item = document.getElementById('filepicker-wrapper-' + me.config.client_id);
+        if (item) {
+            item.style.display = '';
+        }
+
+        // Init dndoptions
+        M.form_dndupload.init(Y, me.dndoptions);
+
+        // Checks whether an OMERO image has been selected (usefull after page refresh)
+        var omeroimageurl = document.getElementsByName(me.config.elementname);
+        if (omeroimageurl && omeroimageurl.length > 0) {
+            var visibilerois = document.getElementsByName("visibilerois");
+            if (visibilerois && visibilerois.length > 0)
+                visibilerois = visibilerois[0].value;
+            var showroitable = document.getElementsByName("showroitable");
+            if (showroitable && showroitable.length > 0)
+                showroitable = showroitable[0].value;
+            omeroimageurl = omeroimageurl[0].value;
+        }
+
+        // Immediately apply the callback if the hidden element containing the selected image is defined
+        if (omeroimageurl != null && omeroimageurl.length > 0 && omeroimageurl != 'none') {
+            me.callback({
+                client_id: dndoptions.clientid,
+                url: omeroimageurl,
+                visiblerois: options.visiblerois,
+                showroitable: showroitable,
+                options: dndoptions
+            });
+        }
+
+        if (!M.omero_filepicker.instances[me._id])
+            M.omero_filepicker.instances[me._id] = me;
+    };
+
+
+    /**
+     * Handle the selection of an image from the OmeroRepository
+     *
+     * @param params
+     */
+    this.callback = function (params) {
+
+        var html = "";
+        var url = params['url'];
+        var elementName = me.config["elementname"];
+        var filenameElement = me.config["filename_element"];
+        var moodle_server = me.config["moodle_server"];
+        var newURL = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname;
+
+        // FIXME: check whether there exists a better method to identify the file type
+        if (url.indexOf("webgateway") > -1 || url.indexOf("omero-image-repository") > -1) {
+
+            var server_address = url.substring(0, url.indexOf("webgateway") - 1);
+            var filepicker_container_id = '#file_info_' + params['client_id'];
+
+            // compute the imageId from the actual url
+            var image_id = url.substring(url.lastIndexOf("/") + 1);
+            var image_params = null;
+            var image_params_index = url.indexOf("?");
+            if (image_params_index > 0) {
+                image_params = url.substr(image_params_index + 1);
+                image_id = url.substring(url.lastIndexOf("/") + 1, image_params_index);
             }
+
+            var visiblerois = params['visiblerois'];
+            if (!visiblerois || visiblerois == "none") {
+                var visiblerois_index = url.indexOf("&visibleRois=");
+                if (visiblerois_index > 0) {
+                    visiblerois = url.substr(visiblerois_index);
+                }
+            }
+
+            // FIXME: only for debug
+            console.log("Server Address: " + server_address);
+            console.log("URL: " + url);
+            console.log("IMAGE_ID: " + image_id);
+            console.log("IMAGE_PARAMS: " + image_params);
+            console.log("VISIBLE_ROIS: " + visiblerois);
+            console.log("Moodle Server:" + moodle_server);
+
+
+            var moodle_viewer_for_omero_url = moodle_server + "/repository/omero/viewer/viewer.php";
+            me._current_selected_image = {
+                omero_server_address: server_address,
+                moodle_viewer_for_omero_url: moodle_viewer_for_omero_url,
+                container_id: filepicker_container_id,
+                image_id: image_id
+            };
+
+            // Update the URL of the current selected image
+            if (filenameElement && document.getElementById(filenameElement)) {
+                document.getElementById(filenameElement).innerHTML = "id." + image_id;
+            }
+
+            if (document.getElementById("id_" + elementName)) {
+                document.getElementById("id_" + elementName).setAttribute("value", url);
+            }
+
+            for (var l  in me._listeners)
+                me._listeners[l].onSelectedImage(me._current_selected_image, me);
+
+        } else { // Default filepicker viewer
+            html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
+            html += '<div class="dndupload-progressbars"></div>';
+            me.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
         }
 
-        // FIXME: only for debug
-        console.log("Server Address: " + server_address);
-        console.log("URL: " + url);
-        console.log("IMAGE_ID: " + image_id);
-        console.log("IMAGE_PARAMS: " + image_params);
-        console.log("VISIBLE_ROIS: " + visiblerois);
-        console.log("Moodle Server:" + M.form_filepicker.Y.moodle_server);
+        //When file is added then set status of global variable to true
+        me.fileadded = true;
+        //generate event to indicate changes which will be used by disable if or validation code
+        if (me.Y.one('#id_' + elementName))
+            me.Y.one('#id_' + elementName).simulate('change');
+    };
 
-
-        var moodle_viewer_for_omero_url = M.form_filepicker.Y.moodle_server + "/repository/omero/viewer/viewer.php";
-
-        me.current_selected_image = {
-            omero_server_address: server_address,
-            container_id: filepicker_container_id,
-            image_id: image_id,
-            frame_id: frame_id,
-            moodle_viewer_for_omero_url: moodle_viewer_for_omero_url
-        };
-
-        // Update the URL of the current selected image
-        document.getElementById("omerofilepicker-selected-filename").innerHTML = "id." + image_id;
-        document.getElementById("id_omeroimageurl").setAttribute("value", url);
-
-    } else { // Default filepicker viewer
-        html = '<a href="' + params['url'] + '">' + params['file'] + '</a>';
-        html += '<div class="dndupload-progressbars"></div>';
-        M.form_filepicker.Y.one('#file_info_' + params['client_id'] + ' .filepicker-filename').setContent(html);
-    }
-
-    //When file is added then set status of global variable to true
-    var elementName = M.core_filepicker.instances[params['client_id']].options.elementname;
-    M.form_filepicker.instances[elementName].fileadded = true;
-    //generate event to indicate changes which will be used by disable if or validation code
-    M.form_filepicker.Y.one('#id_' + elementName).simulate('change');
+    // initialize the current instance
+    this._initialize(options, dndoptions, use_defaults);
 };
+
+
+// Collects all instances of the OmeroFilePicker class
+M.omero_filepicker.instances = {};
+
+
+/**
+ * Utility function to generate an ID for a picker
+ * given its configuration properties.
+ *
+ * @param options
+ * @returns {string}
+ */
+M.omero_filepicker.getId = function (options) {
+    return options["client_id"] + "_" + options["elementname"];
+};
+
 
 /**
  * This function is called for each file picker on page.
  */
-M.form_filepicker.init = function (Y, options) {
-    //Keep reference of YUI, so that it can be used in callback.
-    M.form_filepicker.Y = Y;
-
-    // FIXME: disallow not needed repositories from the PHP code
-    for (var i in options.repositories) {
-        if (options.repositories[i].type !== "omero")
-            delete options.repositories[i];
-    }
-
-    //For client side validation, initialize file status for this filepicker
-    M.form_filepicker.instances[options.elementname] = {};
-    M.form_filepicker.instances[options.elementname].fileadded = false;
-
-    //Set filepicker callback
-    options.formcallback = M.form_filepicker.callback;
-
-    // Set MoodleServer
-    M.form_filepicker.Y.moodle_server = options.moodle_server;
-
-    // Set 'showroitable' flag
-    M.form_filepicker.Y.showroitable = options.showroitable;
-
-    if (!M.core_filepicker.instances[options.client_id]) {
-        M.core_filepicker.init(Y, options);
-    }
-    Y.on('click', function (e, client_id) {
-        e.preventDefault();
-        if (this.ancestor('.fitem.disabled') == null) {
-            M.core_filepicker.instances[client_id].show();
-        }
-    }, '#filepicker-button-' + options.client_id, null, options.client_id);
-
-    var item = document.getElementById('nonjs-filepicker-' + options.client_id);
-    if (item) {
-        item.parentNode.removeChild(item);
-    }
-    item = document.getElementById('filepicker-wrapper-' + options.client_id);
-    if (item) {
-        item.style.display = '';
-    }
-
-    var dndoptions = {
+M.omero_filepicker.init = function (Y, options) {
+    M.omero_filepicker.Y = Y;
+    M.omero_filepicker.default_configuration = JSON.parse(JSON.stringify(options));
+    M.omero_filepicker.dndoptions = {
         clientid: options.client_id,
         moodle_server: options.moodle_server,
         acceptedtypes: options.accepted_types,
@@ -164,50 +297,19 @@ M.form_filepicker.init = function (Y, options) {
         omero_image_server: options.omero_image_server,
         showroitable: options.showroitable
     };
-
-    M.form_dndupload.init(Y, dndoptions);
-
-    // Checks whether an OMERO image has been selected (usefull after page refresh)
-    var omeroimageurl = document.getElementsByName(options.elementname);
-    if (omeroimageurl && omeroimageurl.length > 0) {
-        var visibilerois = document.getElementsByName("visibilerois");
-        if (visibilerois && visibilerois.length > 0)
-            visibilerois = visibilerois[0].value;
-        var showroitable = document.getElementsByName("showroitable");
-        if (showroitable && showroitable.length > 0)
-            showroitable = showroitable[0].value;
-        omeroimageurl = omeroimageurl[0].value;
-    }
-
-    if (omeroimageurl != null && omeroimageurl.length > 0 && omeroimageurl != 'none') {
-        M.form_filepicker.callback({
-            client_id: dndoptions.clientid,
-            url: omeroimageurl,
-            visiblerois: options.visiblerois,
-            showroitable: showroitable,
-            options: dndoptions
-        });
-    }
+    console.log("Default configuration", options);
+    var id = M.omero_filepicker.getId(options);
+    return new M.omero_filepicker(options, M.omero_filepicker.dndoptions, false);
 };
-
-/**
- * Returns a JSON description of the currently selected image
- *
- * @returns {{server_address: string, image_id: *}|*}
- */
-me.getCurrentSelectedImage = function () {
-    return M.form_filepicker.current_selected_image;
-};
-
 
 /**
  * Notifies that frame is completely loaded !!!
  * @param frame_obj frame object reference
  */
-M.form_filepicker.notifyFrameLoaded = function (frame_obj) {
+M.omero_filepicker.notifyFrameLoaded = function (frame_obj) {
     console.log("Frame '" + frame_obj.id + "' is loaded!!!", frame_obj);
     document.dispatchEvent(new CustomEvent('frameLoaded', {
-        detail: M.form_filepicker.current_selected_image,
+        detail: M.omero_filepicker._current_selected_image,
         bubbles: true
     }));
 };
