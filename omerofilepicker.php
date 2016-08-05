@@ -54,7 +54,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
     /** @var array options provided to initalize filemanager */
     // PHP doesn't support 'key' => $value1 | $value2 in class definition
-    // We cannot do $_options = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
+    // We cannot do $config = array('return_types'=> FILE_INTERNAL | FILE_REFERENCE);
     // So I have to set null here, and do it in constructor
     protected $_options = array('maxbytes' => 0, 'accepted_types' => '*', 'return_types' => null);
 
@@ -103,7 +103,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         return "file_info_" . $this->getClientId(); // . ' .filepicker-filename';
     }
 
-    public function getSelectedImageInputId(){
+    public function getSelectedImageInputId()
+    {
         return "id_" . $this->_attributes["name"];
     }
 
@@ -118,6 +119,8 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         $id = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
+        $buttonname = $this->_attributes['buttonname'];
+
         if (isset($this->_attributes['value']))
             $value = $this->_attributes['value'];
         else $value = "";
@@ -137,7 +140,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
             $context = context_course::instance($COURSE->id);
         }
 
-
         $args = new stdClass();
 
         // need these three to filter repositories list
@@ -148,8 +150,11 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $args->fileinfo_container_id = $this->getFileInfoContainerId();
         $args->maxbytes = $this->_options['maxbytes'];
         $args->context = $PAGE->context;
-        $args->buttonname = $elname . 'choose';
         $args->elementname = $elname;
+        $args->buttonname = isset($buttonname) ? $buttonname : $elname . 'choose';
+        $args->buttonid = 'id_' . $args->buttonname;
+
+        $args->filename_element = "${elname}-selected-filename";
 
         $html = $this->_getTabs();
 
@@ -167,7 +172,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         // initializes the filepicker controller
         $module = array('name' => 'form_filepicker', 'fullpath' => '/lib/form/omerofilepicker/omerofilepicker.js',
             'requires' => array('core_filepicker', 'node', 'node-event-simulate', 'core_dndupload'));
-        $PAGE->requires->js_init_call('M.form_filepicker.init', array($fp->options), true, $module);
+        $PAGE->requires->js_init_call('M.omero_filepicker.init', array($fp->options), true, $module);
         // defaults
         $nonjsfilepicker = new moodle_url('/repository/draftfiles_manager.php', array(
             'env' => 'filepicker',
@@ -202,6 +207,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         global $CFG, $OUTPUT, $USER;
         $options = $fp->options;
         $client_id = $options->client_id;
+        $buttonid = $options->buttonid;
         $strsaved = get_string('filesaved', 'repository');
         $straddfile = get_string('choose_image', 'repository_omero');
         $strloading = get_string('loading', 'repository');
@@ -225,11 +231,6 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         } else {
             $maxsize = get_string('maxfilesize', 'moodle', display_size($size));
         }
-        if ($options->buttonname) {
-            $buttonname = ' name="' . $options->buttonname . '"';
-        } else {
-            $buttonname = '';
-        }
 
         $current_image_label = get_string('current_image', 'repository_omero');
 
@@ -242,12 +243,12 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         <strong>$current_image_label:</strong>
 
         <div style="float: right;">
-            <input type="button" class="fp-btn-choose" id="filepicker-button-{$client_id}" value="{$straddfile}"{$buttonname}/>
+            <input type="button" class="fp-btn-choose" id="{$buttonid}" value="{$straddfile}"{$buttonname}/>
             <!--<span> $maxsize </span>-->
         </div>
 EOD;
         // Print the current selected file
-        $html .= ' <span id="omerofilepicker-selected-filename">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
+        $html .= ' <span id="' . $options->filename_element . '">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
 
         $html .= <<<EOD
 
