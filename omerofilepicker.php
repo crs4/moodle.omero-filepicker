@@ -165,6 +165,7 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
         $options->context = $PAGE->context;
         $options->moodle_server = $CFG->wwwroot;
         $options->omero_image_server = $this->omero_image_server;
+        $options->disable_image_selection = (bool) $this->_options["disable_image_selection"];
         $options->showroitable = $this->showroitable;
         $html .= $this->render_file_picker($fp);
         $html .= '<input type="hidden" name="' . $elname . '" id="' . $id .
@@ -241,12 +242,16 @@ class MoodleQuickForm_omerofilepicker extends MoodleQuickForm_filepicker
 
         <!-- if no URL has been selected yet -->
         <strong>$current_image_label:</strong>
-
+EOD;
+        if ($this->_options["disable_image_selection"] != "true") {
+            $html .= <<<EOD
         <div style="float: right;">
+        
             <input type="button" class="fp-btn-choose" id="{$buttonid}" value="{$straddfile}"{$buttonname}/>
             <!--<span> $maxsize </span>-->
         </div>
 EOD;
+        }
         // Print the current selected file
         $html .= ' <span id="' . $options->filename_element . '">' . (!empty($currentfile) ? $currentfile : "none") . '</span>';
 
