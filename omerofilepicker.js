@@ -124,7 +124,7 @@ M.omero_filepicker = function (options, dndoptions, use_defaults) {
         me._helper = filepicker_helper;
 
         // Set the handler of the CLICK event triggered by the button with ID me.config["buttonid"]
-        if(!me.config["disable_image_selection"]) {
+        if (me.config["disable_image_selection"] === undefined || !me.config["disable_image_selection"]) {
             var button_element = document.getElementById(me.config["buttonid"]);
             if (!button_element)
                 console.error("Unable to find the button element with ID " + me.config["buttonid"]);
